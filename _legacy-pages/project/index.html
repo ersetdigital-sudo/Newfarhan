@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARVA — Brand &amp; Kit System · Farhan Raka.K</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&amp;family=Poppins:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  fontFamily: { display:['Sora','sans-serif'], body:['Poppins','sans-serif'] },
+  colors: { coral:'#FF5A45', clay:'#C96A4B', mustard:'#E8A33D', indigo:'#3F3D9E', paper:'#FBF9F5', chalk:'#FFFFFF', ink:'#14131A' },
+} } };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+  @media (hover: hover) and (pointer: fine) { * { cursor: none !important; } }
+  ::selection { background:#FF5A45; color:#fff; }
+  html, body { background:#FBF9F5; color:#14131A; }
+  .grad-text { background:linear-gradient(100deg,#FF5A45,#E8A33D 55%,#C96A4B); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .grain { position:fixed; inset:0; z-index:2; pointer-events:none; opacity:.035;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .reveal { opacity:1; } html.js-on .reveal { opacity:0; }
+  #bar { position:fixed; top:0; left:0; height:3px; width:0; z-index:60; background:linear-gradient(90deg,#FF5A45,#E8A33D,#C96A4B); }
+  @keyframes floaty { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+  .floaty { animation: floaty 8s ease-in-out infinite; }
+</style>
+</head>
+<body class="font-body antialiased">
+<div class="grain"></div><div id="bar"></div>
+
+<div id="cursor-dot" class="pointer-events-none fixed left-0 top-0 z-[999] hidden h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-ink md:block"></div>
+<div id="cursor-ring" class="pointer-events-none fixed left-0 top-0 z-[999] hidden h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-ink/30 md:flex">
+  <span id="cursor-label" class="font-display text-[8px] font-semibold uppercase tracking-[0.18em] text-white opacity-0">Zoom</span>
+</div>
+
+<header class="sticky top-0 z-50 border-b border-ink/5 bg-paper/75 backdrop-blur-xl">
+  <nav class="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-5">
+    <a href="/" class="font-display text-[15px] font-extrabold tracking-tight">Farhan Raka<span class="text-coral">.K</span></a>
+    <a href="/" class="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-ink/12 bg-chalk px-4 py-2.5 text-[12px] transition-colors hover:border-coral hover:text-coral md:px-5 md:text-[13px]">
+      <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12H5M11 18l-6-6 6-6"></path></svg> Semua Karya
+    </a>
+    <a href="/#contact" class="whitespace-nowrap rounded-full bg-ink px-4 py-2.5 text-[12px] font-medium text-paper transition-colors hover:bg-coral md:px-5 md:text-[13px]">Start a Project</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="relative overflow-hidden">
+  <div class="pointer-events-none absolute -left-32 -top-40 h-[28rem] w-[28rem] rounded-full bg-coral/18 blur-[130px] floaty"></div>
+  <div class="pointer-events-none absolute -right-24 top-16 h-80 w-80 rounded-full bg-mustard/20 blur-[130px]"></div>
+  <div class="relative mx-auto max-w-[1200px] px-6 pb-12 pt-14 md:pt-20">
+    <p data-hero="" class="mb-6 inline-flex items-center gap-3 rounded-full border border-ink/10 bg-chalk px-4 py-2 text-[11px] uppercase tracking-[0.24em] text-coral">
+      <span class="h-1.5 w-1.5 rounded-full bg-coral"></span> Brand Identity System · 2025
+    </p>
+    <h1 data-hero="" class="max-w-4xl font-display text-[11vw] font-extrabold leading-[0.9] tracking-[-0.04em] md:text-[5.6rem]">
+      <span class="grad-text">ARVA</span>
+    </h1>
+    <p data-hero="" class="mt-6 max-w-xl text-[15px] leading-relaxed text-ink/65">
+      Identitas visual menyeluruh: logo suite, sistem warna dan tipografi, stationery,
+      signage toko, sampai template konten sosial media yang bisa dijalankan sendiri oleh tim.
+    </p>
+    <dl data-hero="" class="mt-14 grid gap-8 border-t border-ink/10 pt-8 sm:grid-cols-4">
+      <div><dt class="text-xs uppercase tracking-[0.18em] text-ink/40">Klien</dt><dd class="mt-2 font-display text-sm font-semibold">ARVA</dd></div>
+      <div><dt class="text-xs uppercase tracking-[0.18em] text-ink/40">Layanan</dt><dd class="mt-2 font-display text-sm font-semibold">Identity &amp; Brand System</dd></div>
+      <div><dt class="text-xs uppercase tracking-[0.18em] text-ink/40">Durasi</dt><dd class="mt-2 font-display text-sm font-semibold">6 minggu</dd></div>
+      <div><dt class="text-xs uppercase tracking-[0.18em] text-ink/40">Peran</dt><dd class="mt-2 font-display text-sm font-semibold">Designer &amp; Art Direction</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- COVER -->
+<section class="mx-auto max-w-[1200px] px-6">
+  <div class="reveal relative h-[320px] overflow-hidden rounded-[2rem] border border-ink/8 md:h-[560px]" style="background:#F7F1E7">
+    <img data-zoom="" src="../../images/269ea28f-c1ae-4aaf-9557-277451504028.png" alt="ARVA — brand identity &amp; guidelines board" class="h-full w-full object-contain object-top">
+  </div>
+</section>
+
+<!-- CASE STUDY -->
+<section class="mx-auto max-w-[1200px] px-6 py-20">
+  <div class="grid gap-14 md:grid-cols-[1fr,1.45fr]">
+    <div class="reveal md:sticky md:top-28 md:self-start">
+      <p class="mb-3 font-display text-xs tracking-[0.3em] text-ink/40">CASE STUDY</p>
+      <h2 class="font-display text-3xl font-bold tracking-[-0.03em] md:text-5xl">From idea<br><span class="grad-text">to visual.</span></h2>
+      <ul class="mt-8 space-y-3 text-sm text-ink/60">
+        <li class="flex gap-3"><span class="h-1.5 w-1.5 shrink-0 translate-y-2 rounded-full" style="background:#FF5A45"></span> Discover</li>
+        <li class="flex gap-3"><span class="h-1.5 w-1.5 shrink-0 translate-y-2 rounded-full" style="background:#E8A33D"></span> Concept</li>
+        <li class="flex gap-3"><span class="h-1.5 w-1.5 shrink-0 translate-y-2 rounded-full" style="background:#3F3D9E"></span> Design &amp; Refine</li>
+      </ul>
+      <div class="mt-10 grid grid-cols-4 gap-2">
+        <span class="h-12 rounded-xl border border-ink/5" style="background:#14131A"></span>
+        <span class="h-12 rounded-xl border border-ink/5" style="background:#F26A21"></span>
+        <span class="h-12 rounded-xl border border-ink/5" style="background:#F5B324"></span>
+        <span class="h-12 rounded-xl border border-ink/5" style="background:#F7F1E7"></span>
+      </div>
+      <p class="mt-3 text-xs text-ink/50">Palet final brand</p>
+    </div>
+
+    <div class="space-y-12">
+      <div class="reveal">
+        <p class="text-xs uppercase tracking-[0.2em] text-coral">Discover</p>
+        <p class="mt-4 leading-relaxed text-ink/70">
+          ARVA sudah punya pelanggan tetap, tapi tampilannya belum satu suara: logo dipakai
+          dalam tiga versi berbeda, warna toko dan warna konten tidak sama, dan setiap materi
+          promosi dibuat ulang dari nol. Audit awal memetakan seluruh titik sentuh brand lalu
+          menetapkan satu arah: tenang, hangat, dan terlihat mapan.
+        </p>
+      </div>
+      <div class="reveal">
+        <p class="text-xs uppercase tracking-[0.2em] text-mustard">Concept</p>
+        <p class="mt-4 leading-relaxed text-ink/70">
+          Arah visual dibangun dari kombinasi bentuk geometris sederhana dan palet
+          ink–orange–amber di atas dasar cream. Hasilnya satu sistem yang rapi: primary logo, monogram, versi
+          horizontal, aturan ruang kosong, dan pasangan tipografi untuk judul dan teks panjang.
+        </p>
+      </div>
+      <div class="reveal">
+        <p class="text-xs uppercase tracking-[0.2em] text-indigo">Design &amp; Refine</p>
+        <p class="mt-4 leading-relaxed text-ink/70">
+          Sistem diturunkan ke materi nyata: stationery suite siap cetak, signage dan facade
+          toko, serta template feed sosial media yang bisa diisi sendiri oleh tim. Semua aturan
+          dirangkum dalam brand guideline 18 halaman beserta file siap produksi.
+        </p>
+      </div>
+      <div class="reveal grid grid-cols-3 gap-4">
+        <div class="rounded-2xl border border-ink/8 bg-chalk p-5"><p class="font-display text-3xl font-bold"><span class="counter" data-to="40">0</span>%</p><p class="mt-1 text-xs text-ink/55">Engagement naik</p></div>
+        <div class="rounded-2xl border border-ink/8 bg-chalk p-5"><p class="font-display text-3xl font-bold"><span class="counter" data-to="18">0</span></p><p class="mt-1 text-xs text-ink/55">Halaman guideline</p></div>
+        <div class="rounded-2xl border border-ink/8 bg-chalk p-5"><p class="font-display text-3xl font-bold"><span class="counter" data-to="24">0</span></p><p class="mt-1 text-xs text-ink/55">Titik sentuh brand</p></div>
+      </div>
+      <blockquote class="reveal rounded-[2rem] p-8 text-white md:p-10" style="background:linear-gradient(140deg,#FF5A45,#C96A4B)">
+        <p class="font-display text-xl font-semibold leading-snug md:text-2xl">
+          "Sekarang brand kami kelihatan rapi di mana pun dipasang, dan timnya gampang ikut aturannya."
+        </p>
+        <footer class="mt-5 text-sm text-white/80">— Dimas, owner ARVA</footer>
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- GALERI -->
+<section class="mx-auto max-w-[1200px] px-6 pb-20">
+  <p class="reveal mb-4 font-display text-xs tracking-[0.3em] text-ink/40">GALLERY</p>
+  <div class="reveal mb-10 flex items-end justify-between gap-6">
+    <h2 class="font-display text-3xl font-bold tracking-[-0.03em] md:text-5xl">Galeri</h2>
+    <p class="hidden text-sm text-ink/50 sm:block">Klik gambar untuk lihat versi besar</p>
+  </div>
+  <div class="grid gap-5 md:grid-cols-6">
+    <div class="reveal col-span-full overflow-hidden rounded-[1.75rem] border border-ink/8 md:col-span-4">
+      <img data-zoom="" src="../../images/80931dd2-bdaa-4375-809d-307fa7ccf0e0.png" alt="ARVA — stationery suite" class="h-full w-full object-cover transition-transform duration-[1100ms] hover:scale-[1.05] md:h-[440px]">
+    </div>
+    <div class="reveal col-span-full overflow-hidden rounded-[1.75rem] border border-ink/8 md:col-span-2">
+      <img data-zoom="" src="../../images/d70331f8-fda6-4948-a310-7da323f5f60b.png" alt="ARVA — social feed system" class="h-full w-full object-cover transition-transform duration-[1100ms] hover:scale-[1.05] md:h-[440px]">
+    </div>
+    <div class="reveal col-span-full overflow-hidden rounded-[1.75rem] border border-ink/8">
+      <img data-zoom="" src="../../images/6b73f91c-313e-4ee0-b3ae-5988bf16bf95.png" alt="ARVA — signage &amp; facade" class="h-full w-full object-cover transition-transform duration-[1100ms] hover:scale-[1.03] md:h-[420px]">
+    </div>
+  </div>
+</section>
+
+<!-- NEXT -->
+<section class="border-t border-ink/10">
+  <div class="mx-auto max-w-[1200px] px-6 py-20">
+    <a data-magnetic="" href="/#works" class="reveal group flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <p class="text-xs uppercase tracking-[0.2em] text-ink/40">Selanjutnya</p>
+        <h2 class="mt-3 font-display text-4xl font-bold tracking-[-0.03em] md:text-6xl">Lihat karya<br><span class="grad-text">lainnya.</span></h2>
+      </div>
+      <span class="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-ink text-paper transition-all duration-300 group-hover:scale-110 group-hover:bg-coral">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h15M13 6l6 6-6 6"></path></svg>
+      </span>
+    </a>
+  </div>
+</section>
+
+<footer class="border-t border-ink/10">
+  <div class="mx-auto flex max-w-[1200px] flex-col gap-3 px-6 py-8 text-xs text-ink/50 sm:flex-row sm:justify-between">
+    <p>© 2026 Farhan Raka.K. All rights reserved.</p>
+    <p>Creative Designer · Visual Design · Branding</p>
+  </div>
+</footer>
+
+<div id="lightbox" class="fixed inset-0 z-[900] hidden place-items-center bg-ink/92 p-6 backdrop-blur">
+  <img id="lightbox-img" src="" alt="" class="max-h-[85vh] w-auto max-w-full rounded-2xl object-contain">
+  <button id="lightbox-close" class="absolute right-6 top-6 grid h-11 w-11 place-items-center rounded-full border border-white/30 text-white">
+    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+  </button>
+</div>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+document.documentElement.classList.add('js-on');
+gsap.from('[data-hero]', { y:40, opacity:0, duration:1, stagger:.09, ease:'power3.out' });
+document.querySelectorAll('.reveal').forEach(el => {
+  gsap.fromTo(el, { y:44, opacity:0 }, { y:0, opacity:1, duration:1, ease:'power3.out',
+    scrollTrigger: { trigger: el, start:'top 88%', once:true } });
+});
+setTimeout(() => gsap.set('.reveal', { opacity:1, y:0, clearProps:'transform' }), 2200);
+
+document.querySelectorAll('[data-parallax]').forEach(img => {
+  gsap.fromTo(img, { yPercent:-7 }, { yPercent:7, ease:'none',
+    scrollTrigger: { trigger: img.parentElement, start:'top bottom', end:'bottom top', scrub:true } });
+});
+document.querySelectorAll('.counter').forEach(el => {
+  const o = { v:0 }, to = +el.dataset.to;
+  gsap.to(o, { v:to, duration:1.6, ease:'power2.out',
+    scrollTrigger: { trigger: el, start:'top 92%', once:true },
+    onUpdate: () => el.textContent = Math.round(o.v) });
+});
+setTimeout(() => document.querySelectorAll('.counter').forEach(el => { if (el.textContent === '0') el.textContent = el.dataset.to; }), 2600);
+
+const bar = document.getElementById('bar');
+window.addEventListener('scroll', () => {
+  const p = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+  gsap.to(bar, { width:(p*100)+'%', duration:.2, ease:'none' });
+});
+
+const lb = document.getElementById('lightbox'), lbImg = document.getElementById('lightbox-img');
+const openLb = src => { lbImg.src = src; lb.classList.replace('hidden','grid'); gsap.fromTo(lbImg, { scale:.92, opacity:0 }, { scale:1, opacity:1, duration:.35, ease:'power3.out' }); };
+const closeLb = () => lb.classList.replace('grid','hidden');
+document.querySelectorAll('[data-zoom]').forEach(img => img.addEventListener('click', () => openLb(img.src)));
+document.getElementById('lightbox-close').addEventListener('click', closeLb);
+lb.addEventListener('click', e => { if (e.target === lb) closeLb(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+
+const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+const dot = document.getElementById('cursor-dot'), ring = document.getElementById('cursor-ring'), label = document.getElementById('cursor-label');
+if (!fine) { dot.remove(); ring.remove(); } else {
+  document.querySelectorAll('[data-magnetic]').forEach(el => {
+    el.addEventListener('mousemove', e => {
+      const r = el.getBoundingClientRect();
+      gsap.to(el, { x:(e.clientX-(r.left+r.width/2))*.2, y:(e.clientY-(r.top+r.height/2))*.25, duration:.35 });
+    });
+    el.addEventListener('mouseleave', () => gsap.to(el, { x:0, y:0, duration:.5, ease:'elastic.out(1,.4)' }));
+  });
+  gsap.set([dot, ring], { xPercent:-50, yPercent:-50, x:-100, y:-100 });
+  window.addEventListener('mousemove', e => {
+    gsap.set(dot, { x:e.clientX, y:e.clientY });
+    gsap.to(ring, { x:e.clientX, y:e.clientY, duration:.55, ease:'power3.out' });
+  });
+  const resetRing = () => { gsap.to(ring, { scale:1, backgroundColor:'rgba(0,0,0,0)', duration:.3 }); ring.style.borderColor=''; gsap.to(label,{opacity:0,duration:.2}); gsap.to(dot,{opacity:1,duration:.25}); };
+  document.querySelectorAll('[data-zoom]').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      gsap.to(ring, { scale:2.5, backgroundColor:'#FF5A45', duration:.35, ease:'power3.out' });
+      ring.style.borderColor='#FF5A45'; gsap.to(label,{opacity:1,duration:.25,delay:.05}); gsap.to(dot,{opacity:0,duration:.2});
+    });
+    el.addEventListener('mouseleave', resetRing);
+  });
+}
+</script>
+
+</body></html>

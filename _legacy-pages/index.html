@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Farhan Raka.K — Creative Designer / Branding &amp; Apparel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&amp;family=Poppins:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: { extend: {
+    fontFamily: { display: ['Sora','sans-serif'], body: ['Poppins','sans-serif'] },
+    colors: { coral:'#FF5A45', clay:'#C96A4B', mustard:'#E8A33D', indigo:'#3F3D9E',
+              paper:'#FBF9F5', chalk:'#FFFFFF', ink:'#14131A' },
+  } },
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+  @media (hover: hover) and (pointer: fine) { * { cursor: none !important; } }
+  ::selection { background:#FF5A45; color:#fff; }
+  html, body { background:#FBF9F5; color:#14131A; }
+  .grad-text { background:linear-gradient(100deg,#FF5A45,#E8A33D 55%,#C96A4B);
+    -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .grain { position:fixed; inset:0; z-index:2; pointer-events:none; opacity:.035;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .masonry { column-gap:1.25rem; } .masonry > * { break-inside:avoid; margin-bottom:1.25rem; }
+  .reveal { opacity:1; } html.js-on .reveal { opacity:0; }
+  @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+  .marquee-track { animation: marquee 26s linear infinite; }
+  @keyframes floaty { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+  .floaty { animation: floaty 8s ease-in-out infinite; }
+  .tilt { transform-style:preserve-3d; will-change:transform; }
+  .shine::after { content:''; position:absolute; inset:0; border-radius:inherit; opacity:0;
+    background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.45) 50%,transparent 65%);
+    transition:opacity .5s, transform .9s; transform:translateX(-60%); }
+  .group:hover .shine::after { opacity:1; transform:translateX(60%); }
+  .num { font-variant-numeric: tabular-nums; }
+  /* MOUSE TRACKING */
+  .snake { position:fixed; left:0; top:0; z-index:998; pointer-events:none; border-radius:9999px;
+    mix-blend-mode:multiply; will-change:transform; }
+  @media (hover: none), (pointer: coarse) { .snake { display:none; } }
+  #cursor-dot { background:#FF5A45; box-shadow:0 0 0 3px rgba(255,90,69,.18); }
+  #cursor-ring { backdrop-filter: invert(4%); transition: border-color .25s; }
+  #spotlight { position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.9;
+    background:radial-gradient(260px circle at var(--mx,50%) var(--my,50%), rgba(255,90,69,.10), rgba(232,163,61,.06) 45%, transparent 70%); }
+  .mag-hover { position:relative; }
+  [data-spot] { position:relative; }
+  [data-spot]::before { content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+    opacity:0; transition:opacity .4s;
+    background:radial-gradient(180px circle at var(--cx,50%) var(--cy,50%), rgba(255,90,69,.16), transparent 70%); }
+  [data-spot]:hover::before { opacity:1; }
+</style>
+</head>
+<body class="font-body antialiased">
+<div class="grain"></div>
+<div id="spotlight"></div>
+
+<!-- CURSOR -->
+<div id="cursor-dot" class="pointer-events-none fixed left-0 top-0 z-[999] hidden h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-ink md:block"></div>
+<div id="cursor-ring" class="pointer-events-none fixed left-0 top-0 z-[999] hidden h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-ink/35 md:flex">
+  <span id="cursor-label" class="font-display text-[8px] font-semibold uppercase tracking-[0.18em] text-white opacity-0">Lihat</span>
+</div>
+
+<!-- NAV -->
+<header class="sticky top-0 z-50 border-b border-ink/5 bg-paper/75 backdrop-blur-xl">
+  <nav class="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-5">
+    <a href="#" class="font-display text-[15px] font-extrabold tracking-tight">Farhan Raka<span class="text-coral">.K</span></a>
+    <ul class="hidden items-center gap-1 rounded-full border border-ink/10 bg-chalk px-2 py-1.5 text-[13px] shadow-[0_1px_2px_rgba(20,19,26,.04)] md:flex">
+      <li><a href="#home" class="rounded-full px-4 py-1.5 transition-colors hover:bg-ink/5">Home</a></li>
+      <li><a href="#portfolio" class="rounded-full px-4 py-1.5 transition-colors hover:bg-ink/5">Portfolio</a></li>
+      <li><a href="#about" class="rounded-full px-4 py-1.5 transition-colors hover:bg-ink/5">About</a></li>
+      <li><a href="#contact" class="rounded-full px-4 py-1.5 transition-colors hover:bg-ink/5">Contact</a></li>
+    </ul>
+    <a href="#contact" class="hidden rounded-full bg-ink px-5 py-2.5 text-[13px] font-medium text-paper transition-colors hover:bg-coral md:inline-flex">Start a Project</a>
+
+    <button id="menu-btn" aria-label="Buka menu" aria-expanded="false" aria-controls="mobile-menu" class="grid h-11 w-11 place-items-center rounded-full border border-ink/12 bg-chalk md:hidden">
+      <span class="relative block h-[14px] w-[18px]">
+        <span class="mb-line absolute left-0 top-0 block h-[2px] w-full rounded-full bg-ink transition-transform duration-300"></span>
+        <span class="mb-line absolute left-0 top-[6px] block h-[2px] w-full rounded-full bg-ink transition-opacity duration-200"></span>
+        <span class="mb-line absolute left-0 top-[12px] block h-[2px] w-full rounded-full bg-ink transition-transform duration-300"></span>
+      </span>
+    </button>
+  </nav>
+</header>
+
+<!-- QUICK VIEW -->
+<div id="quickview" class="pointer-events-none fixed inset-0 z-[850] grid place-items-center p-4 opacity-0 transition-opacity duration-300 sm:p-6">
+  <div data-qv-close="" class="absolute inset-0 bg-ink/70 backdrop-blur-sm"></div>
+  <div data-qv-panel="" class="relative max-h-[90vh] w-full max-w-[920px] overflow-hidden rounded-[2rem] border border-ink/10 bg-paper shadow-[0_30px_80px_rgba(20,19,26,.28)] transition-transform duration-[350ms]" style="transform:translateY(18px) scale(.98)">
+    <button data-qv-close="" aria-label="Tutup" class="absolute right-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-paper/90 text-ink shadow-sm backdrop-blur">
+      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+    </button>
+    <div class="grid max-h-[90vh] overflow-y-auto md:grid-cols-[1.15fr,1fr] md:overflow-hidden">
+      <div class="h-[240px] bg-chalk md:h-[460px]">
+        <img id="qv-img" src="" alt="" class="h-full w-full object-cover">
+      </div>
+      <div class="flex flex-col justify-center gap-4 p-7 md:p-10">
+        <p id="qv-cat" class="text-[10px] uppercase tracking-[0.22em]">Kategori</p>
+        <h3 id="qv-title" class="font-display text-2xl font-bold leading-tight tracking-[-0.02em] md:text-3xl">Judul</h3>
+        <p id="qv-desc" class="text-sm leading-relaxed text-ink/65">Deskripsi</p>
+        <div class="mt-2 flex flex-wrap gap-3">
+          <a href="#contact" data-qv-close="" class="rounded-full bg-ink px-5 py-3 text-[13px] font-medium text-paper transition-colors hover:bg-coral">Tanya project serupa</a>
+          <button data-qv-close="" class="rounded-full border border-ink/12 bg-chalk px-5 py-3 text-[13px] transition-colors hover:border-coral hover:text-coral">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE MENU -->
+<div id="mobile-menu" class="pointer-events-none fixed inset-0 z-[80] opacity-0 transition-opacity duration-300 md:hidden">
+  <div id="menu-backdrop" class="absolute inset-0 bg-ink/45 backdrop-blur-sm"></div>
+  <nav class="absolute left-4 right-4 top-4 origin-top rounded-[1.75rem] border border-ink/10 bg-paper p-6 shadow-[0_24px_60px_rgba(20,19,26,.18)]">
+    <div class="mb-6 flex items-center justify-between">
+      <span class="font-display text-[15px] font-extrabold tracking-tight">Farhan Raka<span class="text-coral">.K</span></span>
+      <button id="menu-close" aria-label="Tutup menu" class="grid h-10 w-10 place-items-center rounded-full border border-ink/12 bg-chalk">
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+      </button>
+    </div>
+    <ul class="space-y-1 font-display text-2xl font-bold tracking-[-0.02em]">
+      <li><a data-menu-link="" href="#home" class="flex items-center justify-between border-b border-ink/8 py-3">Home</a></li>
+      <li><a data-menu-link="" href="#portfolio" class="flex items-center justify-between border-b border-ink/8 py-3">Portfolio</a></li>
+      <li><a data-menu-link="" href="#about" class="flex items-center justify-between border-b border-ink/8 py-3">About</a></li>
+      <li><a data-menu-link="" href="#contact" class="flex items-center justify-between py-3">Contact</a></li>
+    </ul>
+    <a data-menu-link="" href="#contact" class="mt-6 flex items-center justify-center rounded-full bg-ink px-5 py-3.5 text-[14px] font-medium text-paper">Mulai Project</a>
+    <p class="mt-4 text-center text-[11px] uppercase tracking-[0.2em] text-ink/40">Indonesia · Available for work</p>
+  </nav>
+</div>
+
+<!-- HERO -->
+<section id="home" class="relative overflow-hidden">
+  <div class="pointer-events-none absolute -left-32 -top-40 h-[30rem] w-[30rem] rounded-full bg-coral/18 blur-[130px] floaty"></div>
+  <div class="pointer-events-none absolute -right-24 top-16 h-96 w-96 rounded-full bg-mustard/22 blur-[130px]"></div>
+  <div class="pointer-events-none absolute left-1/3 top-80 h-72 w-72 rounded-full bg-indigo/12 blur-[130px]"></div>
+
+  <div class="relative mx-auto max-w-[1200px] px-6 pb-20 pt-16 md:pt-24">
+    <div data-hero="" class="mb-8 inline-flex items-center gap-3 rounded-full border border-ink/10 bg-chalk px-4 py-2 text-[11px] uppercase tracking-[0.24em] text-ink/55">
+      <span class="relative flex h-2 w-2"><span class="absolute inset-0 animate-ping rounded-full bg-coral/60"></span><span class="relative h-2 w-2 rounded-full bg-coral"></span></span>
+      Indonesia · Tersedia untuk project baru
+    </div>
+
+    <h1 class="font-display text-[11.5vw] font-extrabold leading-[0.9] tracking-[-0.04em] md:text-[5.6rem]">
+      <span data-hero="" class="block">Desain yang bekerja</span>
+      <span data-hero="" class="block">untuk brand Anda.</span>
+      <span data-hero="" class="block grad-text text-[8.5vw] md:text-[3.7rem]">Bukan sekadar terlihat bagus.</span>
+    </h1>
+
+    <div class="mt-9 grid gap-8 md:grid-cols-[1fr,1fr] md:items-end">
+      <p data-hero="" class="max-w-lg text-[15px] leading-relaxed text-ink/65">
+        Saya mengerjakan branding, logo, jersey, campaign, dan kebutuhan visual digital
+        untuk membantu sebuah brand tampil lebih jelas dan profesional.
+      </p>
+      <div data-hero="" class="flex flex-wrap items-center gap-3 md:justify-end">
+        <a data-magnetic="" href="#portfolio" class="group inline-flex items-center gap-3 rounded-full bg-coral px-8 py-4 font-display text-sm font-semibold text-white shadow-[0_16px_44px_-16px_rgba(255,90,69,.85)] transition-transform hover:-translate-y-0.5">
+          Lihat Portfolio
+          <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h15M13 6l6 6-6 6"></path></svg>
+        </a>
+        <a data-magnetic="" href="#contact" class="rounded-full border border-ink/15 bg-chalk px-8 py-4 font-display text-sm font-semibold transition-colors hover:border-coral hover:text-coral">Mulai Project</a>
+      </div>
+    </div>
+
+    <div class="mt-16 grid max-w-3xl grid-cols-3 gap-6 border-t border-ink/10 pt-8">
+      <div><p class="num font-display text-4xl font-bold tracking-tight"><span class="counter" data-to="120">0</span><span class="text-coral">+</span></p><p class="mt-1 text-xs text-ink/50">Project selesai</p></div>
+      <div><p class="num font-display text-4xl font-bold tracking-tight"><span class="counter" data-to="60">0</span><span class="text-mustard">+</span></p><p class="mt-1 text-xs text-ink/50">Brand &amp; bisnis</p></div>
+      <div><p class="num font-display text-4xl font-bold tracking-tight"><span class="counter" data-to="6">0</span><span class="text-indigo"> yr</span></p><p class="mt-1 text-xs text-ink/50">Tahun pengalaman</p></div>
+    </div>
+  </div>
+
+  <!-- MARQUEE -->
+  <div class="relative overflow-hidden border-y border-ink/10 bg-ink py-4 text-paper">
+    <div class="marquee-track flex w-[200%] items-center gap-8 whitespace-nowrap font-display text-sm uppercase tracking-[0.22em]">
+      <span>Logo &amp; Brand Identity</span><span class="text-coral">—</span><span>Jersey &amp; Apparel</span><span class="text-mustard">—</span><span>Social Media</span><span class="text-coral">—</span><span>Banner &amp; Poster</span><span class="text-mustard">—</span><span>Campaign Visual</span><span class="text-coral">—</span>
+      <span>Logo &amp; Brand Identity</span><span class="text-coral">—</span><span>Jersey &amp; Apparel</span><span class="text-mustard">—</span><span>Social Media</span><span class="text-coral">—</span><span>Banner &amp; Poster</span><span class="text-mustard">—</span><span>Campaign Visual</span><span class="text-coral">—</span>
+    </div>
+  </div>
+</section>
+
+<!-- 01 WHAT I DO -->
+<section class="mx-auto max-w-[1200px] px-6 pt-20">
+  <p class="reveal mb-4 font-display text-xs tracking-[0.3em] text-ink/40">WHAT I DO</p>
+  <h2 class="reveal max-w-2xl font-display text-4xl font-bold tracking-[-0.03em] md:text-5xl">Desain dengan tujuan yang jelas.</h2>
+  <div class="mt-10 grid gap-5 md:grid-cols-3">
+    <div class="reveal group rounded-[1.75rem] border border-ink/8 bg-chalk p-8 transition-transform duration-500 hover:-translate-y-1">
+      <span class="block h-1.5 w-10 rounded-full" style="background:#FF5A45"></span>
+      <h3 class="mt-4 font-display text-xl font-bold">Logo &amp; Brand Identity</h3>
+      <p class="mt-3 text-sm leading-relaxed text-ink/60">Logo, palet warna, tipografi, dan guideline agar brand tetap konsisten di setiap media.</p>
+    </div>
+    <div class="reveal group rounded-[1.75rem] border border-ink/8 bg-chalk p-8 transition-transform duration-500 hover:-translate-y-1">
+      <span class="block h-1.5 w-10 rounded-full" style="background:#E8A33D"></span>
+      <h3 class="mt-4 font-display text-xl font-bold">Jersey &amp; Apparel Design</h3>
+      <p class="mt-3 text-sm leading-relaxed text-ink/60">Desain jersey dan apparel lengkap dengan mockup depan-belakang serta artwork siap produksi.</p>
+    </div>
+    <div class="reveal group rounded-[1.75rem] border border-ink/8 bg-chalk p-8 transition-transform duration-500 hover:-translate-y-1">
+      <span class="block h-1.5 w-10 rounded-full" style="background:#3F3D9E"></span>
+      <h3 class="mt-4 font-display text-xl font-bold">Social Media &amp; Marketing</h3>
+      <p class="mt-3 text-sm leading-relaxed text-ink/60">Konten feed, banner, dan poster campaign yang rapi dan tetap terbaca di setiap ukuran.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 02 FEATURED -->
+<section id="portfolio" class="mx-auto max-w-[1200px] px-6 pt-24">
+  <p class="reveal mb-4 font-display text-xs tracking-[0.3em] text-ink/40">FEATURED WORK</p>
+  <div class="reveal flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+    <h2 class="font-display text-4xl font-bold tracking-[-0.03em] md:text-6xl">ARVA <span class="grad-text">Identity</span></h2>
+    <p class="max-w-sm text-sm leading-relaxed text-ink/60">Brand identity lengkap untuk studio kreatif ARVA: logo suite, palet warna, tipografi, stationery, signage, dan aset digital.</p>
+  </div>
+
+  <div class="mt-10 grid gap-5 md:grid-cols-5 md:grid-rows-3">
+    <a href="/project" data-card="" data-cat="branding" class="reveal group relative col-span-full overflow-hidden rounded-[2rem] border border-ink/8 bg-chalk md:col-span-3 md:row-span-3">
+      <div class="relative h-[360px] w-full overflow-hidden bg-[#F7F1E7] md:h-full md:min-h-[640px]">
+        <img src="../images/269ea28f-c1ae-4aaf-9557-277451504028.png" alt="ARVA — brand identity &amp; guidelines board" class="h-full w-full object-contain object-top transition-transform duration-[1200ms] group-hover:scale-[1.03]">
+      </div>
+      <div class="shine absolute inset-0" style="background:linear-gradient(to top, rgba(20,19,26,.95) 0%, rgba(20,19,26,.55) 32%, rgba(20,19,26,0) 62%)"></div>
+      <div class="absolute inset-x-0 bottom-0 p-7 md:p-9">
+        <span class="inline-flex rounded-full bg-coral px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-white">Featured · Branding</span>
+        <h3 class="mt-5 font-display text-2xl font-bold leading-tight text-white md:text-4xl">ARVA —<br>Brand Identity System</h3>
+        <p class="mt-3 max-w-sm text-sm text-white/70">Logo suite, palet warna, tipografi, dan guideline dalam satu papan identitas.</p>
+      </div>
+    </a>
+    <a href="/project" data-card="" data-cat="branding" class="reveal group relative col-span-full overflow-hidden rounded-[2rem] border border-ink/8 bg-chalk md:col-span-2">
+      <div class="relative h-56 w-full overflow-hidden bg-[#F7F1E7] md:h-[200px]">
+        <img src="../images/80931dd2-bdaa-4375-809d-307fa7ccf0e0.png" alt="ARVA — stationery suite" class="h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-[1.05]">
+      </div>
+      <div class="shine absolute inset-0" style="background:linear-gradient(to top, rgba(20,19,26,.95) 0%, rgba(20,19,26,.5) 42%, rgba(20,19,26,0) 78%)"></div>
+      <div class="absolute inset-x-0 bottom-0 p-5">
+        <span class="inline-flex rounded-full bg-mustard/95 text-ink px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.16em]">Stationery</span>
+        <h3 class="mt-2.5 font-display text-lg font-bold leading-tight text-white">Business Card, Letterhead &amp; Tag</h3>
+      </div>
+    </a>
+    <a href="/project" data-card="" data-cat="branding" class="reveal group relative col-span-full overflow-hidden rounded-[2rem] border border-ink/8 bg-chalk md:col-span-2">
+      <div class="relative h-56 w-full overflow-hidden bg-[#F7F1E7] md:h-[200px]">
+        <img src="../images/6b73f91c-313e-4ee0-b3ae-5988bf16bf95.png" alt="ARVA — signage &amp; facade" class="h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-[1.05]">
+      </div>
+      <div class="shine absolute inset-0" style="background:linear-gradient(to top, rgba(20,19,26,.95) 0%, rgba(20,19,26,.5) 42%, rgba(20,19,26,0) 78%)"></div>
+      <div class="absolute inset-x-0 bottom-0 p-5">
+        <span class="inline-flex rounded-full bg-ink text-white px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.16em]">Environmental</span>
+        <h3 class="mt-2.5 font-display text-lg font-bold leading-tight text-white">Blade Signage &amp; Facade</h3>
+      </div>
+    </a>
+    <a href="/project" data-card="" data-cat="social" class="reveal group relative col-span-full overflow-hidden rounded-[2rem] border border-ink/8 bg-chalk md:col-span-2">
+      <div class="relative h-56 w-full overflow-hidden bg-[#F7F1E7] md:h-[200px]">
+        <img src="../images/d70331f8-fda6-4948-a310-7da323f5f60b.png" alt="ARVA — social feed system" class="h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-[1.05]">
+      </div>
+      <div class="shine absolute inset-0" style="background:linear-gradient(to top, rgba(20,19,26,.95) 0%, rgba(20,19,26,.5) 42%, rgba(20,19,26,0) 78%)"></div>
+      <div class="absolute inset-x-0 bottom-0 p-5">
+        <span class="inline-flex rounded-full bg-indigo text-white px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.16em]">Digital</span>
+        <h3 class="mt-2.5 font-display text-lg font-bold leading-tight text-white">Social Feed System</h3>
+      </div>
+    </a>
+  </div>
+
+  <!-- FILTER -->
+  <p class="reveal mt-24 mb-4 font-display text-xs tracking-[0.3em] text-ink/40">SELECTED WORKS</p>
+  <div class="reveal flex flex-wrap gap-2.5" id="filters">
+    <button data-filter="all" class="filter-btn rounded-full bg-coral px-5 py-2.5 text-[13px] font-medium text-white">All</button>
+    <button data-filter="branding" class="filter-btn rounded-full border border-ink/12 bg-chalk px-5 py-2.5 text-[13px] transition-colors hover:border-coral hover:text-coral">Branding</button>
+    <button data-filter="logo" class="filter-btn rounded-full border border-ink/12 bg-chalk px-5 py-2.5 text-[13px] transition-colors hover:border-coral hover:text-coral">Logo Design</button>
+    <button data-filter="apparel" class="filter-btn rounded-full border border-ink/12 bg-chalk px-5 py-2.5 text-[13px] transition-colors hover:border-coral hover:text-coral">Jersey &amp; Apparel</button>
+    <button data-filter="social" class="filter-btn rounded-full border border-ink/12 bg-chalk px-5 py-2.5 text-[13px] transition-colors hover:border-coral hover:text-coral">Social Media</button>
+    <button data-filter="poster" class="filter-btn rounded-full border border-ink/12 bg-chalk px-5 py-2.5 text-[13px] transition-colors hover:border-coral hover:text-coral">Banner &amp; Poster</button>
+  </div>
+</section>
+
+<section class="mx-auto max-w-[1200px] px-6 py-12">
+  <div id="grid" class="masonry columns-1 sm:columns-2 lg:columns-3">
+    <a role="button" tabindex="0" data-quick="" data-desc="Away kit untuk klub semi-pro: artwork siap produksi, mockup depan-belakang, dan aturan penempatan nomor serta sponsor." data-cat="apparel" data-card="" data-tilt="" class="reveal tilt group relative block overflow-hidden rounded-[1.75rem] border border-ink/8 bg-chalk">
+      <div class="h-[420px] w-full overflow-hidden">
+        <img src="../images/132bd8bb-ae48-44cf-b43f-5dd97e720f23.png" alt="Nexus FC — Away Kit" class="h-full w-full object-cover transition-transform duration-[1100ms] ease-out group-hover:scale-[1.07]">
+      </div>
+      <div class="shine absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" style="background:linear-gradient(to top, rgba(20,19,26,.9), rgba(20,19,26,.1) 55%, transparent)"></div>
+      <div class="absolute inset-x-0 bottom-0 translate-y-4 p-6 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+        <div class="flex items-end justify-between gap-4">
+          <div>
+            <p class="text-[10px] uppercase tracking-[0.22em]" style="color:#FF5A45">Jersey &amp; Apparel</p>
+            <h3 class="mt-2 font-display text-lg font-bold leading-snug text-white">Nexus FC — Away Kit</h3>
+          </div>
+          <span class="grid h-11 w-11 shrink-0 place-items-center rounded-full text-white" style="background:#FF5A45">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"></path></svg>
+          </span>
+        </div>
+      </div>
+    </a>
+    <a role="button" tabindex="0" data-quick="" data-desc="Poster campaign untuk event desain: tipografi besar, komposisi geometris tajam, dan file siap cetak ukuran A1." data-cat="poster" data-card="" data-tilt="" class="reveal tilt group relative block overflow-hidden rounded-[1.75rem] border border-ink/8 bg-chalk">
+      <div class="h-[520px] w-full overflow-hidden">
+        <img src="../images/cc73ed0e-0a76-449d-8c46-204beb344c96.png" alt="The Arrival — Poster Campaign" class="h-full w-full object-cover transition-transform duration-[1100ms] ease-out group-hover:scale-[1.07]">
+      </div>
+      <div class="shine absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" style="background:linear-gradient(to top, rgba(20,19,26,.9), rgba(20,19,26,.1) 55%, transparent)"></div>
+      <div class="absolute inset-x-0 bottom-0 translate-y-4 p-6 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+        <div class="flex items-end justify-between gap-4">
+          <div>
+            <p class="text-[10px] uppercase tracking-[0.22em]" style="color:#E8A33D">Banner &amp; Poster</p>
+            <h3 class="mt-2 font-display text-lg font-bold leading-snug text-white">The Arrival — Poster Campaign</h3>
+          </div>
+          <span class="grid h-11 w-11 shrink-0 place-items-center rounded-full text-white" style="background:#E8A33D">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"></path></svg>
+          </span>
+        </div>
+      </div>
+    </a>
+    <a role="button" tabindex="0" data-quick="" data-desc="Seri apparel hoodie dan tee dengan artwork grafis, label jahit, serta hang tag yang satu bahasa visual." data-cat="apparel" data-card="" data-tilt="" class="reveal tilt group relative block overflow-hidden rounded-[1.75rem] border border-ink/8 bg-chalk">
+      <div class="h-[460px] w-full overflow-hidden">
+        <img src="../images/fc0d4e32-6788-4c4c-9865-e36c196b516e.png" alt="Urban Archetype — Apparel" class="h-full w-full object-cover transition-transform duration-[1100ms] ease-out group-hover:scale-[1.07]">
+      </div>
+      <div class="shine absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" style="background:linear-gradient(to top, rgba(20,19,26,.9), rgba(20,19,26,.1) 55%, transparent)"></div>
+      <div class="absolute inset-x-0 bottom-0 translate-y-4 p-6 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+        <div class="flex items-end justify-between gap-4">
+          <div>
+            <p class="text-[10px] uppercase tracking-[0.22em]" style="color:#3F3D9E">Jersey &amp; Apparel</p>
+            <h3 class="mt-2 font-display text-lg font-bold leading-snug text-white">Urban Archetype — Apparel</h3>
+          </div>
+          <span class="grid h-11 w-11 shrink-0 place-items-center rounded-full text-white" style="background:#3F3D9E">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"></path></svg>
+          </span>
+        </div>
+      </div>
+    </a>
+    <a role="button" tabindex="0" data-quick="" data-desc="Identitas dan kemasan skincare botanis: label bottle, karton sekunder, dan panduan foto produk." data-cat="branding" data-card="" data-tilt="" class="reveal tilt group relative block overflow-hidden rounded-[1.75rem] border border-ink/8 bg-chalk">
+      <div class="h-[360px] w-full overflow-hidden">
+        <img src="../images/9f5ca154-2407-4b03-8cd2-a5cb95e446f8.png" alt="Verde Botanica — Packaging" class="h-full w-full object-cover transition-transform duration-[1100ms] ease-out group-hover:scale-[1.07]">
+      </div>
+      <div class="shine absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" style="background:linear-gradient(to top, rgba(20,19,26,.9), rgba(20,19,26,.1) 55%, transparent)"></div>
+      <div class="absolute inset-x-0 bottom-0 translate-y-4 p-6 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+        <div class="flex items-end justify-between gap-4">
+          <div>
+            <p class="text-[10px] uppercase tracking-[0.22em]" style="color:#9DBE9D">Branding</p>
+            <h3 class="mt-2 font-display text-lg font-bold leading-snug text-white">Verde Botanica — Packaging</h3>
+          </div>
+          <span class="grid h-11 w-11 shrink-0 place-items-center rounded-full text-white" style="background:#C96A4B">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"></path></svg>
+          </span>
+        </div>
+      </div>
+    </a>
+    <a role="button" tabindex="0" data-quick="" data-desc="Identitas Verde: logo daun minimalis, wordmark sans-serif berspasi lebar, versi light-dark, app icon, serta penerapan di kartu nama dan cetak emboss." data-cat="logo" data-card="" data-tilt="" class="reveal tilt group relative block overflow-hidden rounded-[1.75rem] border border-ink/8 bg-chalk">
+      <div class="flex h-[300px] w-full items-center overflow-hidden" style="background:#F1F3EF">
+        <img src="../images/1fc73f62-8d18-4caa-b9e7-aa026d06f1b5.png" alt="Verde — Logo Presentation" class="h-auto w-full object-contain transition-transform duration-[1100ms] ease-out group-hover:scale-[1.05]">
+      </div>
+      <div class="shine absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" style="background:linear-gradient(to top, rgba(20,19,26,.9), rgba(20,19,26,.1) 55%, transparent)"></div>
+      <div class="absolute inset-x-0 bottom-0 translate-y-4 p-6 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+        <div class="flex items-end justify-between gap-4">
+          <div>
+            <p class="text-[10px] uppercase tracking-[0.22em]" style="color:#8FBF8F">Logo Design</p>
+            <h3 class="mt-2 font-display text-lg font-bold leading-snug text-white">Verde — Logo Presentation</h3>
+          </div>
+          <span class="grid h-11 w-11 shrink-0 place-items-center rounded-full text-white" style="background:#2E5E3A">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"></path></svg>
+          </span>
+        </div>
+      </div>
+    </a>
+    <a role="button" tabindex="0" data-quick="" data-desc="Identitas Halcyon: wordmark serif dengan ikon spark, monogram H, versi light–dark–navy, palet navy–gold–cream, serta penerapan di kartu nama dan signage." data-cat="logo" data-card="" data-tilt="" class="reveal tilt group relative block overflow-hidden rounded-[1.75rem] border border-ink/8 bg-chalk">
+      <div class="flex h-[300px] w-full items-center overflow-hidden" style="background:#F4F4F2">
+        <img src="../images/9c7784d6-e8ed-41b3-a14b-c56300b96634.png" alt="Halcyon — Logo &amp; Identity Board" class="h-auto w-full object-contain transition-transform duration-[1100ms] ease-out group-hover:scale-[1.05]">
+      </div>
+      <div class="shine absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" style="background:linear-gradient(to top, rgba(20,19,26,.9), rgba(20,19,26,.1) 55%, transparent)"></div>
+      <div class="absolute inset-x-0 bottom-0 translate-y-4 p-6 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+        <div class="flex items-end justify-between gap-4">
+          <div>
+            <p class="text-[10px] uppercase tracking-[0.22em]" style="color:#D4AF37">Logo Design</p>
+            <h3 class="mt-2 font-display text-lg font-bold leading-snug text-white">Halcyon — Logo &amp; Identity</h3>
+          </div>
+          <span class="grid h-11 w-11 shrink-0 place-items-center rounded-full text-white" style="background:#0B2545">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"></path></svg>
+          </span>
+        </div>
+      </div>
+    </a>
+    <a role="button" tabindex="0" data-quick="" data-desc="Brand identity OOS NEXA: wordmark custom bersudut tajam dengan chevron oranye, ikon/mark dan secondary mark, palet Nexa Orange–Deep Black–Slate–Light Gray, tipografi Montserrat, plus penerapan kartu nama dan signage." data-cat="logo" data-card="" data-tilt="" class="reveal tilt group relative block overflow-hidden rounded-[1.75rem] border border-ink/8 bg-chalk">
+      <div class="flex h-[300px] w-full items-center overflow-hidden" style="background:#0B0B0B">
+        <img src="../images/c8c9ce26-e0de-426b-a119-c32add5bd506.png" alt="OOS NEXA — Brand Identity Board" class="h-auto w-full object-contain transition-transform duration-[1100ms] ease-out group-hover:scale-[1.05]">
+      </div>
+      <div class="shine absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" style="background:linear-gradient(to top, rgba(20,19,26,.9), rgba(20,19,26,.1) 55%, transparent)"></div>
+      <div class="absolute inset-x-0 bottom-0 translate-y-4 p-6 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+        <div class="flex items-end justify-between gap-4">
+          <div>
+            <p class="text-[10px] uppercase tracking-[0.22em]" style="color:#FF7A18">Logo Design</p>
+            <h3 class="mt-2 font-display text-lg font-bold leading-snug text-white">OOS NEXA — Brand Identity</h3>
+          </div>
+          <span class="grid h-11 w-11 shrink-0 place-items-center rounded-full text-white" style="background:#FF7A18">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"></path></svg>
+          </span>
+        </div>
+      </div>
+    </a>
+    <a role="button" tabindex="0" data-quick="" data-desc="Template carousel Instagram: grid konsisten, hierarki teks jelas, dan mudah diisi ulang oleh tim internal." data-cat="social" data-card="" data-tilt="" class="reveal tilt group relative block overflow-hidden rounded-[1.75rem] border border-ink/8 bg-chalk">
+      <div class="h-[400px] w-full overflow-hidden">
+        <img src="../images/638cf11f-871e-492f-be29-8d351786f821.png" alt="Carousel Content — Studio" class="h-full w-full object-cover transition-transform duration-[1100ms] ease-out group-hover:scale-[1.07]">
+      </div>
+      <div class="shine absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" style="background:linear-gradient(to top, rgba(20,19,26,.9), rgba(20,19,26,.1) 55%, transparent)"></div>
+      <div class="absolute inset-x-0 bottom-0 translate-y-4 p-6 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+        <div class="flex items-end justify-between gap-4">
+          <div>
+            <p class="text-[10px] uppercase tracking-[0.22em]" style="color:#E8A33D">Social Media</p>
+            <h3 class="mt-2 font-display text-lg font-bold leading-snug text-white">Carousel Content — Studio</h3>
+          </div>
+          <span class="grid h-11 w-11 shrink-0 place-items-center rounded-full text-white" style="background:#E8A33D">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"></path></svg>
+          </span>
+        </div>
+      </div>
+    </a>
+    <a role="button" tabindex="0" data-quick="" data-desc="Branding kedai kopi: logo, kemasan biji, cup, dan material toko dengan nuansa kraft–terracotta." data-cat="branding" data-card="" data-tilt="" class="reveal tilt group relative block overflow-hidden rounded-[1.75rem] border border-ink/8 bg-chalk">
+      <div class="h-[340px] w-full overflow-hidden">
+        <img src="../images/4509d617-b611-4cf0-b10f-44c1dfc75cec.png" alt="Kopi Lantai — Coffee Branding" class="h-full w-full object-cover transition-transform duration-[1100ms] ease-out group-hover:scale-[1.07]">
+      </div>
+      <div class="shine absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" style="background:linear-gradient(to top, rgba(20,19,26,.9), rgba(20,19,26,.1) 55%, transparent)"></div>
+      <div class="absolute inset-x-0 bottom-0 translate-y-4 p-6 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+        <div class="flex items-end justify-between gap-4">
+          <div>
+            <p class="text-[10px] uppercase tracking-[0.22em]" style="color:#D9A877">Branding</p>
+            <h3 class="mt-2 font-display text-lg font-bold leading-snug text-white">Kopi Lantai — Coffee Branding</h3>
+          </div>
+          <span class="grid h-11 w-11 shrink-0 place-items-center rounded-full text-white" style="background:#3F3D9E">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"></path></svg>
+          </span>
+        </div>
+      </div>
+    </a>
+    <a role="button" tabindex="0" data-quick="" data-desc="Paket merchandise brand: cap bordir, tote sablon, dan kaos kaki custom dalam satu palet." data-cat="apparel" data-card="" data-tilt="" class="reveal tilt group relative block overflow-hidden rounded-[1.75rem] border border-ink/8 bg-chalk">
+      <div class="h-[380px] w-full overflow-hidden">
+        <img src="../images/59a97444-7d42-4900-a463-56189503f115.png" alt="Merch Set — Cap, Tote, Socks" class="h-full w-full object-cover transition-transform duration-[1100ms] ease-out group-hover:scale-[1.07]">
+      </div>
+      <div class="shine absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" style="background:linear-gradient(to top, rgba(20,19,26,.9), rgba(20,19,26,.1) 55%, transparent)"></div>
+      <div class="absolute inset-x-0 bottom-0 translate-y-4 p-6 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+        <div class="flex items-end justify-between gap-4">
+          <div>
+            <p class="text-[10px] uppercase tracking-[0.22em]" style="color:#C96A4B">Jersey &amp; Apparel</p>
+            <h3 class="mt-2 font-display text-lg font-bold leading-snug text-white">Merch Set — Cap, Tote, Socks</h3>
+          </div>
+          <span class="grid h-11 w-11 shrink-0 place-items-center rounded-full text-white" style="background:#C96A4B">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"></path></svg>
+          </span>
+        </div>
+      </div>
+    </a>
+    <a role="button" tabindex="0" data-quick="" data-desc="Kampanye billboard untuk brand finansial: headline pendek, kontras tinggi, tetap terbaca dari kejauhan." data-cat="poster" data-card="" data-tilt="" class="reveal tilt group relative block overflow-hidden rounded-[1.75rem] border border-ink/8 bg-chalk">
+      <div class="h-[300px] w-full overflow-hidden">
+        <img src="../images/3f3828ce-ff97-4bc8-a617-14e97bfa93ab.png" alt="Halcyon — Billboard Campaign" class="h-full w-full object-cover transition-transform duration-[1100ms] ease-out group-hover:scale-[1.07]">
+      </div>
+      <div class="shine absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" style="background:linear-gradient(to top, rgba(20,19,26,.9), rgba(20,19,26,.1) 55%, transparent)"></div>
+      <div class="absolute inset-x-0 bottom-0 translate-y-4 p-6 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+        <div class="flex items-end justify-between gap-4">
+          <div>
+            <p class="text-[10px] uppercase tracking-[0.22em]" style="color:#7EA6FF">Banner &amp; Poster</p>
+            <h3 class="mt-2 font-display text-lg font-bold leading-snug text-white">Halcyon — Billboard Campaign</h3>
+          </div>
+          <span class="grid h-11 w-11 shrink-0 place-items-center rounded-full text-white" style="background:#1D4ED8">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"></path></svg>
+          </span>
+        </div>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<!-- 04 PROCESS -->
+<section class="mx-auto max-w-[1200px] px-6 py-16">
+  <p class="reveal mb-4 font-display text-xs tracking-[0.3em] text-ink/40">PROCESS</p>
+  <h2 class="reveal font-display text-4xl font-bold tracking-[-0.03em] md:text-5xl">Proses kerja.</h2>
+  <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="reveal rounded-[1.5rem] border border-ink/8 bg-chalk p-7"><span class="block h-1.5 w-8 rounded-full" style="background:#FF5A45"></span><h3 class="mt-3 font-display text-lg font-bold">Discover</h3><p class="mt-2 text-sm text-ink/60">Memahami brand, target pasar, dan arah visual yang diinginkan.</p></div>
+    <div class="reveal rounded-[1.5rem] border border-ink/8 bg-chalk p-7"><span class="block h-1.5 w-8 rounded-full" style="background:#E8A33D"></span><h3 class="mt-3 font-display text-lg font-bold">Concept</h3><p class="mt-2 text-sm text-ink/60">Moodboard, arah tipografi, dan sketsa awal untuk disepakati.</p></div>
+    <div class="reveal rounded-[1.5rem] border border-ink/8 bg-chalk p-7"><span class="block h-1.5 w-8 rounded-full" style="background:#3F3D9E"></span><h3 class="mt-3 font-display text-lg font-bold">Design</h3><p class="mt-2 text-sm text-ink/60">Eksekusi visual dan penerapannya pada media yang dituju.</p></div>
+    <div class="reveal rounded-[1.5rem] border border-ink/8 bg-chalk p-7"><span class="block h-1.5 w-8 rounded-full" style="background:#C96A4B"></span><h3 class="mt-3 font-display text-lg font-bold">Refine</h3><p class="mt-2 text-sm text-ink/60">Revisi, penyesuaian detail, lalu penyerahan file siap produksi.</p></div>
+  </div>
+</section>
+
+<!-- 05 ABOUT -->
+<section id="about" class="mx-auto max-w-[1200px] px-6 py-16">
+  <p class="reveal mb-4 font-display text-xs tracking-[0.3em] text-ink/40">ABOUT</p>
+  <div class="grid gap-5 md:grid-cols-3">
+    <div class="reveal rounded-[2rem] border border-ink/8 bg-chalk p-8 md:col-span-2 md:p-10">
+      <div class="flex items-center gap-5">
+        <span class="relative grid h-24 w-24 shrink-0 place-items-center rounded-full p-[2px]" style="background:linear-gradient(135deg,#FF5A45,#E8A33D)">
+          <img src="../images/c98c49c7-b8f7-4763-ba04-805ebfb930e0.png" alt="Farhan Raka.K" class="h-full w-full rounded-full object-cover">
+        </span>
+        <div>
+          <h2 class="font-display text-2xl font-bold tracking-tight md:text-3xl">Halo, saya Farhan.</h2>
+          <p class="text-xs uppercase tracking-[0.2em] text-coral">Creative Designer · Indonesia</p>
+        </div>
+      </div>
+      <p class="mt-7 max-w-xl leading-relaxed text-ink/65">
+        Enam tahun mengerjakan identitas visual untuk brand kecil hingga menengah: branding, logo, jersey &amp; apparel, serta kebutuhan konten digital. Tiga hal yang selalu saya pegang: clarity, character, consistency.
+      </p>
+      <ul class="mt-8 flex flex-wrap gap-2 text-[13px]">
+        <li class="rounded-full border border-ink/10 bg-paper px-4 py-2">Adobe Illustrator</li>
+        <li class="rounded-full border border-ink/10 bg-paper px-4 py-2">Adobe Photoshop</li>
+        <li class="rounded-full border border-ink/10 bg-paper px-4 py-2">InDesign</li>
+        <li class="rounded-full border border-ink/10 bg-paper px-4 py-2">Figma</li>
+        <li class="rounded-full border border-ink/10 bg-paper px-4 py-2">Canva</li>
+        <li class="rounded-full border border-ink/10 bg-paper px-4 py-2">CorelDRAW</li>
+      </ul>
+    </div>
+    <div class="flex flex-col gap-5">
+      <div class="reveal rounded-[2rem] p-8 text-white" style="background:linear-gradient(140deg,#FF5A45,#C96A4B)">
+        <p class="num font-display text-5xl font-bold leading-none tracking-tight"><span class="counter" data-to="98">0</span>%</p>
+        <p class="mt-3 text-sm leading-relaxed text-white/85">Klien kembali untuk project berikutnya.</p>
+      </div>
+      <div class="reveal flex-1 rounded-[2rem] border border-ink/8 bg-chalk p-8">
+        <p class="text-xs uppercase tracking-[0.2em] text-ink/40">Principles</p>
+        <ul class="mt-4 space-y-3 text-sm">
+          <li class="flex items-center gap-3"><span class="h-1.5 w-1.5 rounded-full bg-coral"></span>Clarity — pesan terbaca lebih dulu</li>
+          <li class="flex items-center gap-3"><span class="h-1.5 w-1.5 rounded-full bg-mustard"></span>Character — punya ciri, bukan template</li>
+          <li class="flex items-center gap-3"><span class="h-1.5 w-1.5 rounded-full bg-indigo"></span>Consistency — konsisten di semua media</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<footer id="contact" class="relative overflow-hidden border-t border-ink/10">
+  <div class="pointer-events-none absolute left-1/4 top-0 h-72 w-72 rounded-full bg-mustard/18 blur-[130px]"></div>
+  <div class="relative mx-auto max-w-[1200px] px-6 py-24">
+    <p class="reveal mb-4 font-display text-xs tracking-[0.3em] text-ink/40">CONTACT</p>
+    <div class="reveal flex flex-col items-start justify-between gap-10 md:flex-row md:items-end">
+      <h2 class="font-display text-4xl font-bold leading-[1.02] tracking-[-0.03em] md:text-6xl">Mari kerjakan<br><span class="grad-text">project Anda.</span></h2>
+      <div class="flex items-center gap-3">
+        <a data-magnetic="" href="#" aria-label="Instagram" class="grid h-12 w-12 place-items-center rounded-full border border-ink/12 bg-chalk transition-colors hover:border-coral hover:text-coral">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.2" cy="6.8" r="1"></circle></svg>
+        </a>
+        <a data-magnetic="" href="#" aria-label="Behance" class="grid h-12 w-12 place-items-center rounded-full border border-ink/12 bg-chalk transition-colors hover:border-mustard hover:text-mustard">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 6h5.5a3 3 0 0 1 0 6H3z"></path><path d="M3 12h6a3 3 0 0 1 0 6H3z"></path><path d="M14 14h7a3.5 3.5 0 1 0-7 0v.5a3.5 3.5 0 0 0 6 2"></path></svg>
+        </a>
+        <a data-magnetic="" href="#" aria-label="WhatsApp" class="grid h-12 w-12 place-items-center rounded-full border border-ink/12 bg-chalk transition-colors hover:border-indigo hover:text-indigo">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 12a9 9 0 0 1-13.2 7.9L3 21l1.2-4.6A9 9 0 1 1 21 12Z"></path></svg>
+        </a>
+        <a data-magnetic="" href="mailto:hello@farhanraka.design" aria-label="Email" class="grid h-12 w-12 place-items-center rounded-full border border-ink/12 bg-chalk transition-colors hover:border-clay hover:text-clay">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="14" rx="3"></rect><path d="m4 7 8 6 8-6"></path></svg>
+        </a>
+      </div>
+    </div>
+    <p class="reveal mt-8 max-w-md text-sm leading-relaxed text-ink/60">
+      Ceritakan kebutuhan brand Anda, dan saya bantu susun arah visualnya. Balasan biasanya di hari yang sama.
+    </p>
+    <p class="reveal mt-3 font-display text-lg font-bold">hello@farhanraka.design</p>
+    <div class="mt-16 flex flex-col gap-3 border-t border-ink/10 pt-6 text-xs text-ink/50 sm:flex-row sm:justify-between">
+      <p>© 2026 Farhan Raka.K. All rights reserved.</p>
+      <p>Creative Designer · Visual Design · Branding</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+const root = document.documentElement;
+
+/* FILTER */
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => {
+      b.classList.remove('bg-coral','text-white');
+      if (b !== btn) b.classList.add('border','border-ink/12','bg-chalk');
+    });
+    btn.classList.remove('border-ink/12','bg-chalk');
+    btn.classList.add('bg-coral','text-white');
+    const f = btn.dataset.filter;
+    document.querySelectorAll('[data-card]').forEach(c => {
+      const show = (f === 'all' || c.dataset.cat === f);
+      if (show) c.style.display = '';
+      gsap.to(c, { opacity: show ? 1 : 0, scale: show ? 1 : .96, duration: .3,
+        onComplete: () => { c.style.display = show ? '' : 'none'; } });
+    });
+  });
+});
+
+/* ANIMASI */
+root.classList.add('js-on');
+gsap.timeline({ defaults:{ ease:'power3.out' } })
+  .from('[data-hero]', { y: 40, opacity: 0, duration: 1, stagger: .09 })
+  .from('header nav > *', { y: -18, opacity: 0, duration: .7, stagger: .08 }, .1);
+gsap.set('[data-hero]', { opacity: 1 });
+
+document.querySelectorAll('.reveal').forEach(el => {
+  gsap.fromTo(el, { y: 44, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease:'power3.out',
+    scrollTrigger: { trigger: el, start:'top 88%', once: true } });
+});
+setTimeout(() => gsap.set('.reveal', { opacity: 1, y: 0, clearProps:'transform' }), 2200);
+
+document.querySelectorAll('.counter').forEach(el => {
+  const o = { v:0 }, to = +el.dataset.to;
+  gsap.to(o, { v: to, duration: 1.6, ease:'power2.out',
+    scrollTrigger: { trigger: el, start:'top 92%', once: true },
+    onUpdate: () => el.textContent = Math.round(o.v) });
+});
+setTimeout(() => document.querySelectorAll('.counter').forEach(el => { if (el.textContent === '0') el.textContent = el.dataset.to; }), 2600);
+
+document.querySelectorAll('[data-parallax]').forEach(img => {
+  gsap.fromTo(img, { yPercent:-7 }, { yPercent:7, ease:'none',
+    scrollTrigger: { trigger: img.parentElement, start:'top bottom', end:'bottom top', scrub:true } });
+});
+gsap.to('.marquee-track', { xPercent:-8, ease:'none',
+  scrollTrigger: { trigger:'.marquee-track', start:'top bottom', end:'bottom top', scrub:true } });
+
+/* TILT + MAGNETIC */
+const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+if (fine) {
+  document.querySelectorAll('[data-tilt]').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      gsap.to(card, { rotationX: ((e.clientY - r.top)/r.height - .5) * -6,
+        rotationY: ((e.clientX - r.left)/r.width - .5) * 6,
+        transformPerspective: 900, duration:.4, ease:'power2.out' });
+    });
+    card.addEventListener('mouseleave', () => gsap.to(card, { rotationX:0, rotationY:0, duration:.6, ease:'power3.out' }));
+  });
+  document.querySelectorAll('[data-magnetic]').forEach(el => {
+    el.addEventListener('mousemove', e => {
+      const r = el.getBoundingClientRect();
+      gsap.to(el, { x:(e.clientX-(r.left+r.width/2))*.22, y:(e.clientY-(r.top+r.height/2))*.28, duration:.35 });
+    });
+    el.addEventListener('mouseleave', () => gsap.to(el, { x:0, y:0, duration:.5, ease:'elastic.out(1,.4)' }));
+  });
+}
+
+/* CURSOR */
+const dot = document.getElementById('cursor-dot'), ring = document.getElementById('cursor-ring'), label = document.getElementById('cursor-label');
+if (!fine) { dot.remove(); ring.remove(); } else {
+  gsap.set([dot, ring], { xPercent:-50, yPercent:-50, x:-100, y:-100 });
+  window.addEventListener('mousemove', e => {
+    gsap.set(dot, { x:e.clientX, y:e.clientY });
+    gsap.to(ring, { x:e.clientX, y:e.clientY, duration:.55, ease:'power3.out' });
+  });
+  const resetRing = () => {
+    gsap.to(ring, { scale:1, backgroundColor:'rgba(0,0,0,0)', duration:.3 });
+    ring.style.borderColor = ''; gsap.to(label, { opacity:0, duration:.2 }); gsap.to(dot, { opacity:1, duration:.25 });
+  };
+  document.querySelectorAll('[data-card]').forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      gsap.to(ring, { scale:2.5, backgroundColor:'#FF5A45', duration:.35, ease:'power3.out' });
+      ring.style.borderColor = '#FF5A45';
+      gsap.to(label, { opacity:1, duration:.25, delay:.05 }); gsap.to(dot, { opacity:0, duration:.2 });
+    });
+    card.addEventListener('mouseleave', resetRing);
+  });
+
+  /* SNAKE TRAIL — ekor ngikutin kursor kaya main uler */
+  const SEG = 18, palette = ['#FF5A45','#E8A33D','#C96A4B','#3F3D9E'];
+  const segs = [], segPos = [];
+  for (let i = 0; i < SEG; i++) {
+    const d = document.createElement('div');
+    const size = 26 - i * 1.05;
+    d.className = 'snake';
+    d.style.width = d.style.height = size + 'px';
+    d.style.background = palette[i % palette.length];
+    d.style.opacity = (0.55 - i * 0.026).toFixed(3);
+    d.style.marginLeft = d.style.marginTop = (-size / 2) + 'px';
+    document.body.appendChild(d);
+    segs.push(d); segPos.push({ x: -200, y: -200 });
+  }
+  const mouse = { x: -200, y: -200 };
+  const segX = segs.map(s => gsap.quickSetter(s, 'x', 'px'));
+  const segY = segs.map(s => gsap.quickSetter(s, 'y', 'px'));
+  gsap.ticker.add(() => {
+    let tx = mouse.x, ty = mouse.y;
+    for (let i = 0; i < SEG; i++) {
+      const p = segPos[i], ease = 0.34 - i * 0.008;
+      p.x += (tx - p.x) * ease;
+      p.y += (ty - p.y) * ease;
+      segX[i](p.x); segY[i](p.y);
+      tx = p.x; ty = p.y;
+    }
+  });
+  window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+  /* SPOTLIGHT GLOW IKUT MOUSE */
+  const spot = document.getElementById('spotlight');
+  const setMX = gsap.quickSetter(spot, '--mx', 'px');
+  const setMY = gsap.quickSetter(spot, '--my', 'px');
+
+  /* BLOB PARALLAX IKUT MOUSE */
+  const blobs = [...document.querySelectorAll('#home .blur-\\[130px\\]')];
+  const blobX = blobs.map(b => gsap.quickTo(b, 'x', { duration:1.1, ease:'power3.out' }));
+  const blobY = blobs.map(b => gsap.quickTo(b, 'y', { duration:1.1, ease:'power3.out' }));
+
+  /* HERO TEXT SEDIKIT IKUT MOUSE */
+  const heroEls = [...document.querySelectorAll('h1 [data-hero]')];
+  const heroX = heroEls.map(el => gsap.quickTo(el, 'x', { duration:1.4, ease:'power3.out' }));
+
+  window.addEventListener('mousemove', e => {
+    setMX(e.clientX); setMY(e.clientY);
+    const nx = (e.clientX / window.innerWidth) - .5;
+    const ny = (e.clientY / window.innerHeight) - .5;
+    blobs.forEach((b,i) => { const d = (i+1) * 26; blobX[i](nx*d); blobY[i](ny*d); });
+    heroEls.forEach((el,i) => heroX[i](nx * (10 + i*6)));
+  });
+
+  /* GLOW LOKAL DI DALAM CARD */
+  document.querySelectorAll('section .reveal.group, .reveal.rounded-\\[1\\.5rem\\], .reveal.rounded-\\[2rem\\]')
+    .forEach(el => el.setAttribute('data-spot',''));
+  document.querySelectorAll('[data-spot]').forEach(el => {
+    el.addEventListener('mousemove', e => {
+      const r = el.getBoundingClientRect();
+      el.style.setProperty('--cx', ((e.clientX-r.left)/r.width*100)+'%');
+      el.style.setProperty('--cy', ((e.clientY-r.top)/r.height*100)+'%');
+    });
+  });
+}
+
+/* ---- MOBILE MENU ---- */
+(function(){
+  const menu = document.getElementById('mobile-menu');
+  const btn = document.getElementById('menu-btn');
+  if(!menu || !btn) return;
+  const panel = menu.querySelector('nav');
+  const lines = btn.querySelectorAll('.mb-line');
+  let open = false;
+
+  function setOpen(v){
+    open = v;
+    btn.setAttribute('aria-expanded', v ? 'true' : 'false');
+    menu.style.opacity = v ? '1' : '0';
+    menu.style.pointerEvents = v ? 'auto' : 'none';
+    panel.style.transition = 'transform .35s cubic-bezier(.2,.8,.2,1), opacity .3s';
+    panel.style.transform = v ? 'translateY(0) scale(1)' : 'translateY(-12px) scale(.98)';
+    panel.style.opacity = v ? '1' : '0';
+    document.body.style.overflow = v ? 'hidden' : '';
+    lines[0].style.transform = v ? 'translateY(6px) rotate(45deg)' : 'none';
+    lines[1].style.opacity = v ? '0' : '1';
+    lines[2].style.transform = v ? 'translateY(-6px) rotate(-45deg)' : 'none';
+  }
+  setOpen(false);
+
+  btn.addEventListener('click', () => setOpen(!open));
+  document.getElementById('menu-close').addEventListener('click', () => setOpen(false));
+  document.getElementById('menu-backdrop').addEventListener('click', () => setOpen(false));
+  menu.querySelectorAll('[data-menu-link]').forEach(a => a.addEventListener('click', () => setOpen(false)));
+  document.addEventListener('keydown', e => { if(e.key === 'Escape' && open) setOpen(false); });
+  window.addEventListener('resize', () => { if(window.innerWidth >= 768 && open) setOpen(false); });
+})();
+
+/* ---- QUICK VIEW ---- */
+(function(){
+  const qv = document.getElementById('quickview');
+  if(!qv) return;
+  const img = document.getElementById('qv-img');
+  const cat = document.getElementById('qv-cat');
+  const title = document.getElementById('qv-title');
+  const desc = document.getElementById('qv-desc');
+  const panel = qv.querySelector('[data-qv-panel]');
+  let open = false;
+
+  function setOpen(v){
+    open = v;
+    qv.style.opacity = v ? '1' : '0';
+    qv.style.pointerEvents = v ? 'auto' : 'none';
+    panel.style.transform = v ? 'translateY(0) scale(1)' : 'translateY(18px) scale(.98)';
+    document.body.style.overflow = v ? 'hidden' : '';
+  }
+  setOpen(false);
+
+  document.querySelectorAll('[data-quick]').forEach(card => {
+    const fire = e => {
+      e.preventDefault();
+      const im = card.querySelector('img');
+      const c = card.querySelector('p');
+      const t = card.querySelector('h3');
+      img.src = im ? im.src : '';
+      img.alt = t ? t.textContent : '';
+      cat.textContent = c ? c.textContent.trim() : '';
+      cat.style.color = c ? getComputedStyle(c).color : '#FF5A45';
+      title.textContent = t ? t.textContent.trim() : '';
+      desc.textContent = card.dataset.desc || '';
+      setOpen(true);
+    };
+    card.addEventListener('click', fire);
+    card.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' ') fire(e); });
+  });
+
+  qv.querySelectorAll('[data-qv-close]').forEach(el => el.addEventListener('click', () => setOpen(false)));
+  document.addEventListener('keydown', e => { if(e.key === 'Escape' && open) setOpen(false); });
+})();
+</script>
+
+</body></html>

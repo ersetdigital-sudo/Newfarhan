@@ -1,69 +1,159 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect } from "react";
+import { CustomCursor } from "@/components/cursor/CustomCursor";
+import { Navigation } from "@/components/nav/Navigation";
+import { QuickViewModal } from "@/components/modal/QuickViewModal";
+import { Hero } from "@/components/sections/Hero";
+import { Services } from "@/components/sections/Services";
+import { FeaturedWork } from "@/components/sections/FeaturedWork";
+import { PortfolioGrid } from "@/components/sections/PortfolioGrid";
+import { Process } from "@/components/sections/Process";
+import { About } from "@/components/sections/About";
+import { Testimonials } from "@/components/sections/Testimonials";
+import { ContactFooter } from "@/components/sections/ContactFooter";
+import { portfolioItems } from "@/data/portfolio";
 
 export default function Home() {
+  const [quickViewOpen, setQuickViewOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<typeof portfolioItems[0] | null>(null);
+
+  const handleQuickView = (item: typeof portfolioItems[0]) => {
+    setSelectedItem(item);
+    setQuickViewOpen(true);
+  };
+
+  // Init GSAP animations
+  useEffect(() => {
+    const init = async () => {
+      try {
+        const gsapModule = await import("gsap");
+        const gsap = gsapModule.default || gsapModule.gsap;
+        const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+
+        gsap.registerPlugin(ScrollTrigger);
+        document.documentElement.classList.add("js-on");
+
+        // Reveal animations for elements not handled by hooks
+        document.querySelectorAll(".reveal").forEach((el) => {
+          gsap.fromTo(
+            el,
+            { y: 44, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 1,
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: el,
+                start: "top 88%",
+                once: true,
+              },
+            }
+          );
+        });
+
+        // Fallback: ensure all reveals visible after 2.2s
+        setTimeout(() => {
+          gsap.set(".reveal", { opacity: 1, y: 0, clearProps: "transform" });
+        }, 2200);
+
+        // Parallax for data-parallax images
+        document.querySelectorAll("[data-parallax]").forEach((img) => {
+          gsap.fromTo(
+            img,
+            { yPercent: -7 },
+            {
+              yPercent: 7,
+              ease: "none",
+              scrollTrigger: {
+                trigger: (img as HTMLElement).parentElement,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: true,
+              },
+            }
+          );
+        });
+
+        // Marquee scrub
+        gsap.to(".marquee-track", {
+          xPercent: -8,
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".marquee-track",
+            start: "top bottom",
+            end: "bottom top",
+            scrub: true,
+          },
+        });
+
+        // Tilt effect
+        const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+        if (fine) {
+          document.querySelectorAll("[data-tilt]").forEach((card) => {
+            card.addEventListener("mousemove", ((e: MouseEvent) => {
+              const r = (card as HTMLElement).getBoundingClientRect();
+              gsap.to(card, {
+                rotationX: ((e.clientY - r.top) / r.height - 0.5) * -6,
+                rotationY: ((e.clientX - r.left) / r.width - 0.5) * 6,
+                transformPerspective: 900,
+                duration: 0.4,
+                ease: "power2.out",
+              });
+            }) as EventListener);
+            card.addEventListener("mouseleave", () => {
+              gsap.to(card, { rotationX: 0, rotationY: 0, duration: 0.6, ease: "power3.out" });
+            });
+          });
+
+          // Magnetic hover
+          document.querySelectorAll("[data-magnetic]").forEach((el) => {
+            el.addEventListener("mousemove", ((e: MouseEvent) => {
+              const r = (el as HTMLElement).getBoundingClientRect();
+              gsap.to(el, {
+                x: (e.clientX - (r.left + r.width / 2)) * 0.22,
+                y: (e.clientY - (r.top + r.height / 2)) * 0.28,
+                duration: 0.35,
+              });
+            }) as EventListener);
+            el.addEventListener("mouseleave", () => {
+              gsap.to(el, { x: 0, y: 0, duration: 0.5, ease: "elastic.out(1,.4)" });
+            });
+          });
+        }
+      } catch {
+        // GSAP not available
+      }
+    };
+
+    init();
+  }, []);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+    <>
+      <CustomCursor />
+      <Navigation />
+
+      <main>
+        <Hero />
+        <Services />
+        <FeaturedWork />
+        <PortfolioGrid onQuickView={handleQuickView} />
+        <Process />
+        <Testimonials />
+        <About />
+        <ContactFooter />
       </main>
-    </div>
+
+      <QuickViewModal
+        isOpen={quickViewOpen}
+        onClose={() => setQuickViewOpen(false)}
+        image={selectedItem?.image ?? ""}
+        category={selectedItem?.description || ""}
+        title={selectedItem?.title || ""}
+        description={selectedItem?.quickView?.description || ""}
+      />
+    </>
   );
 }
