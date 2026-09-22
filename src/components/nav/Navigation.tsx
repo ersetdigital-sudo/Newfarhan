@@ -43,8 +43,12 @@ export function Navigation() {
       {/* Mobile Menu */}
       <div
         id="mobile-menu"
-        className={`pointer-events-none fixed inset-0 z-[80] opacity-0 transition-opacity duration-300 md:hidden ${
-          menuOpen ? "pointer-events-auto opacity-100" : ""
+        /* `pointer-events-none` dipilih lewat kondisi yang sama dengan
+           `pointer-events-auto` — kalau ditulis sebagai class statis, dia
+           selalu menang (urutannya lebih belakang di CSS build) dan seluruh
+           isi menu jadi nggak bisa diklik. */
+        className={`fixed inset-0 z-[80] transition-opacity duration-300 md:hidden ${
+          menuOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
         }`}
       >
         <div

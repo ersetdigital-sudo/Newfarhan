@@ -40,8 +40,14 @@ export function QuickViewModal({
   return (
     <div
       id="quickview"
-      className={`pointer-events-none fixed inset-0 z-[850] grid place-items-center p-4 opacity-0 transition-opacity duration-300 sm:p-6 ${
-        isOpen ? "pointer-events-auto opacity-100" : ""
+      /* PENTING: jangan tulis `pointer-events-none` sebagai class statis lalu
+         ditimpa `pointer-events-auto` waktu terbuka. Di CSS hasil build,
+         `.pointer-events-none` ditulis SETELAH `.pointer-events-auto`, jadi
+         yang menang selalu `none` — popup kelihatan tapi seluruh isinya
+         (termasuk tombol tutup dan latar gelapnya) nggak bisa diklik.
+         Karena itu dua-duanya dipilih lewat kondisi yang sama. */
+      className={`fixed inset-0 z-[850] grid place-items-center p-4 transition-opacity duration-300 sm:p-6 ${
+        isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
       }`}
     >
       <div data-qv-close="" className="absolute inset-0 bg-ink/70 backdrop-blur-sm" onClick={onClose} />
