@@ -77,7 +77,6 @@ export function PaletteEditor({ value, onChange }: PaletteEditorProps) {
     const baru: Row[] = [];
     let ditolak = 0;
     let dobel = 0;
-    let namaDipakai = 0;
 
     for (const potonganKode of potongan) {
       // Di kolom tempel massal kodenya WAJIB 6 digit. Kalau 3 digit ikut
@@ -91,7 +90,6 @@ export function PaletteEditor({ value, onChange }: PaletteEditorProps) {
         const terakhir = baru[baru.length - 1];
         if (terakhir && !terakhir.name) {
           terakhir.name = potonganKode.replace(/[,;:-]+$/, "");
-          namaDipakai += 1;
         } else {
           ditolak += 1;
         }
