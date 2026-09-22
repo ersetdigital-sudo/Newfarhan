@@ -31,7 +31,7 @@ export function Hero() {
           <span data-hero="" className="block grad-text text-[8.5vw] md:text-[3.7rem]">Bukan sekadar terlihat bagus.</span>
         </h1>
 
-        <div className="mt-9 grid gap-8 md:grid-cols-[1fr,1fr] md:items-end">
+        <div className="mt-9 grid gap-8 md:grid-cols-[1fr_1fr] md:items-end">
           <p data-hero="" className="max-w-lg text-[15px] leading-relaxed text-ink/65">
             Saya mengerjakan branding, logo, jersey, campaign, dan kebutuhan visual digital
             untuk membantu sebuah brand tampil lebih jelas dan profesional.

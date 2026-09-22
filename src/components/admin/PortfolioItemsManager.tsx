@@ -158,14 +158,20 @@ function NewItemForm({
         menyesuaikan sendiri.
       </p>
 
-      <div className="mt-4 grid gap-4 md:grid-cols-[180px,1fr]">
-        <ImageUploader
-          currentUrl={imageUrl}
-          aspect={GRID_SPEC.aspect}
-          folder="grid"
-          buttonLabel="Upload foto"
-          onUploaded={setImageUrl}
-        />
+      {/* Dua kolom mulai dari `sm`, bukan `md` — dan catatan penting: pemisah
+          track grid harus spasi (`_`), BUKAN koma. Koma bikin deklarasi
+          `grid-template-columns` invalid & dibuang browser, jadi grid-nya
+          kolaps jadi 1 kolom dan fotonya ngebentang selebar halaman. */}
+      <div className="mt-4 grid gap-4 sm:grid-cols-[150px_1fr]">
+        <div className="mx-auto w-full max-w-[200px] sm:mx-0 sm:max-w-none">
+          <ImageUploader
+            currentUrl={imageUrl}
+            aspect={GRID_SPEC.aspect}
+            folder="grid"
+            buttonLabel="Upload foto"
+            onUploaded={setImageUrl}
+          />
+        </div>
 
         <div className="grid content-start gap-3">
           <Field label="Judul">
@@ -308,8 +314,8 @@ function ItemCard({
 
   return (
     <div className="rounded-2xl border border-ink/10 bg-chalk p-5">
-      <div className="grid gap-5 md:grid-cols-[160px,1fr]">
-        <div>
+      <div className="grid gap-5 sm:grid-cols-[140px_1fr]">
+        <div className="mx-auto w-full max-w-[200px] sm:mx-0 sm:max-w-none">
           <ImageUploader
             currentUrl={draft.image_url}
             aspect={GRID_SPEC.aspect}
@@ -361,9 +367,9 @@ function ItemCard({
         </div>
 
         <div className="grid content-start gap-3">
-          <div className="flex items-center justify-between gap-3">
-            <code className="text-[11px] text-ink/40">{item.slug}</code>
-            <label className="flex items-center gap-2 text-[11px] text-ink/60">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <code className="min-w-0 break-all text-[11px] text-ink/40">{item.slug}</code>
+            <label className="flex shrink-0 items-center gap-2 text-[11px] text-ink/60">
               <input
                 type="checkbox"
                 checked={draft.published}

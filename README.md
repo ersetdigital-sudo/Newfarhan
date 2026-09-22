@@ -166,3 +166,9 @@ statis di `src/data/portfolio.ts`, jadi halaman nggak pernah kosong.
 
 Foto lama nggak ikut dihapus dari Cloudinary waktu diganti — biar salah upload
 nggak berarti kehilangan aset. Bersihkan manual dari Media Library kalau perlu.
+
+**Jangan pakai koma sebagai pemisah di kelas arbitrary Tailwind** (mis.
+`grid-cols-[160px,1fr]`). Tailwind v4 menulisnya apa adanya jadi
+`grid-template-columns:160px,1fr`, dan track list yang dipisah koma itu **CSS
+invalid** — browser membuang deklarasinya, grid kolaps jadi satu kolom, dan foto
+jadi ngebentang selebar halaman. Pakai garis bawah: `grid-cols-[160px_1fr]`.

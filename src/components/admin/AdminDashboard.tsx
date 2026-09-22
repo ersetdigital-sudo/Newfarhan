@@ -82,7 +82,7 @@ export function AdminDashboard({ items, slots, settings, categories }: Dashboard
         </div>
       </header>
 
-      <nav className="mt-8 flex gap-2">
+      <nav className="mt-8 flex flex-wrap gap-2">
         {(
           [
             { key: "slots", label: "Foto Halaman" },
@@ -95,7 +95,7 @@ export function AdminDashboard({ items, slots, settings, categories }: Dashboard
             key={entry.key}
             type="button"
             onClick={() => setTab(entry.key)}
-            className={`rounded-full px-5 py-2.5 text-[13px] font-medium transition-colors ${
+            className={`rounded-full px-4 py-2 text-[12px] font-medium transition-colors sm:px-5 sm:py-2.5 sm:text-[13px] ${
               tab === entry.key
                 ? "bg-coral text-white"
                 : "border border-ink/12 bg-chalk hover:border-coral hover:text-coral"

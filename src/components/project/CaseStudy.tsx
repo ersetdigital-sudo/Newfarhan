@@ -11,7 +11,7 @@ export function CaseStudy() {
 
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-20">
-      <div className="grid gap-14 md:grid-cols-[1fr,1.45fr]">
+      <div className="grid gap-14 md:grid-cols-[1fr_1.45fr]">
         {/* Sidebar */}
         <div ref={ref} className="reveal md:sticky md:top-28 md:self-start">
           <p className="mb-3 font-display text-xs tracking-[0.3em] text-ink/40">CASE STUDY</p>

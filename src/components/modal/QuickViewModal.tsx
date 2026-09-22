@@ -61,7 +61,7 @@ export function QuickViewModal({
             <path d="M6 6l12 12M18 6 6 18" />
           </svg>
         </button>
-        <div className="grid max-h-[90vh] overflow-y-auto md:grid-cols-[1.15fr,1fr] md:overflow-hidden">
+        <div className="grid max-h-[90vh] overflow-y-auto md:grid-cols-[1.15fr_1fr] md:overflow-hidden">
           <div className="h-[240px] bg-[#F7F1E7] md:h-[460px]">
             {image ? (
               // eslint-disable-next-line @next/next/no-img-element
