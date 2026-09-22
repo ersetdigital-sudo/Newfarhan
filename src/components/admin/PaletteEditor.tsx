@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, type FormEvent } from "react";
 import { BRAND_SWATCHES } from "@/lib/site-settings";
 
 interface PaletteEditorProps {
@@ -15,17 +16,24 @@ interface Row {
 }
 
 /**
- * Editor palet warna pakai color picker bawaan browser.
+ * Editor palet warna. Tiga cara pakai, semuanya jalan bersamaan:
+ *
+ * 1. **Color picker** — klik kotak warnanya, pilih warna (nggak perlu tahu kode).
+ * 2. **Tempel kode** — kolom hex di tiap baris bisa ditempel langsung
+ *    (`#FF5A45`, `FF5A45`, atau `FF5`), otomatis dirapikan jadi huruf besar.
+ * 3. **Tempel massal** — kolom di bawah: tempel beberapa kode sekaligus
+ *    (dipisah spasi, koma, atau baris baru), langsung jadi beberapa baris.
  *
  * Datanya tetap disimpan dengan format lama ("#FF5A45 Nama" per baris), jadi
- * situs nggak perlu tahu apa-apa soal UI ini — admin cuma nggak perlu lagi
- * mencari kode heksanya sendiri.
- *
- * Sengaja stateless: baris diturunkan langsung dari `value` setiap render, jadi
- * nggak ada state lokal yang bisa beda dengan yang tersimpan.
+ * situs nggak perlu tahu apa-apa soal UI ini.
  */
 export function PaletteEditor({ value, onChange }: PaletteEditorProps) {
   const rows: Row[] = parseRows(value);
+
+  /** Teks mentah yang sedang diketik di kolom hex — biar kursor nggak lompat. */
+  const [typing, setTyping] = useState<{ index: number; text: string } | null>(null);
+  const [tempel, setTempel] = useState("");
+  const [pesan, setPesan] = useState<string | null>(null);
 
   function commit(next: Row[]) {
     onChange(
@@ -48,6 +56,7 @@ export function PaletteEditor({ value, onChange }: PaletteEditorProps) {
   }
 
   function remove(index: number) {
+    setTyping(null);
     commit(rows.filter((_, i) => i !== index));
   }
 
@@ -55,64 +64,157 @@ export function PaletteEditor({ value, onChange }: PaletteEditorProps) {
     commit([...rows, { hex, name }]);
   }
 
+  /**
+   * Tempel beberapa kode sekaligus, dipisah spasi / koma / baris baru.
+   * Kalau ada teks yang bukan kode, teks itu jadi nama warna di belakangnya —
+   * jadi menempel "#FF5A45 Coral" sekaligus namanya langsung kebaca.
+   */
+  function tempelBanyak(event: FormEvent) {
+    event.preventDefault();
+    const potongan = tempel.split(/[\s,;]+/).filter(Boolean);
+    const sudahAda = new Set(rows.map((row) => row.hex.toUpperCase()));
+
+    const baru: Row[] = [];
+    let ditolak = 0;
+    let dobel = 0;
+    let namaDipakai = 0;
+
+    for (const potonganKode of potongan) {
+      // Di kolom tempel massal kodenya WAJIB 6 digit. Kalau 3 digit ikut
+      // diterima, nama kayak "Amber" (a-b-e semuanya heksa) kebaca jadi kode
+      // #AABBEE. Singkatan 3 digit tetap bisa di kolom kode per baris, karena
+      // di sana konteksnya jelas.
+      const hex = normalizeHex6(potonganKode);
+
+      if (!hex) {
+        // Bukan kode: anggap nama warna terakhir — asal belum punya nama.
+        const terakhir = baru[baru.length - 1];
+        if (terakhir && !terakhir.name) {
+          terakhir.name = potonganKode.replace(/[,;:-]+$/, "");
+          namaDipakai += 1;
+        } else {
+          ditolak += 1;
+        }
+        continue;
+      }
+
+      if (sudahAda.has(hex)) {
+        dobel += 1;
+        continue;
+      }
+      sudahAda.add(hex);
+      baru.push({ hex, name: "" });
+    }
+
+    if (baru.length > 0) commit([...rows, ...baru]);
+
+    const catatan = [
+      baru.length > 0 ? `${baru.length} warna ditambahkan` : "nggak ada warna baru",
+      dobel > 0 ? `${dobel} sudah ada di daftar` : null,
+      ditolak > 0 ? `${ditolak} kode nggak valid` : null,
+    ]
+      .filter(Boolean)
+      .join(" · ");
+    setPesan(catatan);
+    if (baru.length > 0) setTempel("");
+  }
+
   const dipakai = new Set(rows.map((row) => row.hex.toUpperCase()));
 
   return (
     <div className="mt-2 rounded-xl border border-ink/12 bg-paper p-3">
-      <p className="text-[11px] text-ink/50">
-        Klik kotak warnanya untuk memilih warna — nggak perlu tahu kodenya. Nama warna opsional,
-        cuma muncul sebagai keterangan saat kursor diarahkan ke kotak warnanya di situs.
+      <p className="text-[11px] leading-snug text-ink/50">
+        Pilih warnanya lewat color picker, <strong className="text-ink/70">atau tempel kodenya</strong>{" "}
+        (mis. <code>#FF5A45</code>) di kolom kode. Nama warna opsional — cuma muncul sebagai keterangan
+        saat kursor diarahkan ke kotak warnanya di situs.
       </p>
 
       <div className="mt-3 space-y-2">
-        {rows.map((row, index) => (
-          <div key={`${row.hex}-${index}`} className="flex items-center gap-2">
-            <input
-              type="color"
-              value={row.hex}
-              onChange={(event) => update(index, { hex: event.target.value.toUpperCase() })}
-              className="h-10 w-12 shrink-0 cursor-pointer rounded-lg border border-ink/12 bg-chalk p-1"
-              aria-label={`Warna ${index + 1}`}
-            />
-            <code className="hidden w-16 shrink-0 text-[11px] text-ink/45 sm:block">{row.hex}</code>
-            <input
-              value={row.name}
-              onChange={(event) => update(index, { name: event.target.value })}
-              placeholder="Nama warna (opsional)"
-              className="min-w-0 flex-1 rounded-lg border border-ink/12 bg-chalk px-3 py-2 text-xs outline-none transition-colors focus:border-coral"
-            />
-            <button
-              type="button"
-              onClick={() => move(index, -1)}
-              disabled={index === 0}
-              className="rounded-lg border border-ink/12 px-2 py-1.5 text-[11px] disabled:opacity-30"
-              title="Naikkan"
-            >
-              ↑
-            </button>
-            <button
-              type="button"
-              onClick={() => move(index, 1)}
-              disabled={index === rows.length - 1}
-              className="rounded-lg border border-ink/12 px-2 py-1.5 text-[11px] disabled:opacity-30"
-              title="Turunkan"
-            >
-              ↓
-            </button>
-            <button
-              type="button"
-              onClick={() => remove(index)}
-              className="rounded-lg border border-coral/40 px-2 py-1.5 text-[11px] text-coral"
-              title="Hapus warna"
-            >
-              ✕
-            </button>
-          </div>
-        ))}
+        {rows.map((row, index) => {
+          const sedangKetik = typing?.index === index ? typing.text : null;
+          const teksKode = sedangKetik ?? row.hex;
+          const kodeValid = sedangKetik === null || normalizeHex(sedangKetik) !== null;
+
+          return (
+            <div key={`${row.hex}-${index}`} className="flex flex-wrap items-center gap-2">
+              <input
+                type="color"
+                value={row.hex}
+                onChange={(event) => {
+                  setTyping(null);
+                  update(index, { hex: event.target.value.toUpperCase() });
+                }}
+                className="h-10 w-12 shrink-0 cursor-pointer rounded-lg border border-ink/12 bg-chalk p-1"
+                aria-label={`Warna ${index + 1}`}
+              />
+
+              <input
+                value={teksKode}
+                onChange={(event) => {
+                  const text = event.target.value;
+                  setTyping({ index, text });
+                  setPesan(null);
+                  const hex = normalizeHex(text);
+                  // Baru disimpan kalau kodenya udah utuh, biar nggak nyimpen ketikan setengah jalan.
+                  if (hex && hex !== row.hex) update(index, { hex });
+                }}
+                onBlur={() => setTyping(null)}
+                spellCheck={false}
+                placeholder="#FF5A45"
+                aria-label={`Kode warna ${index + 1}`}
+                className={`w-24 shrink-0 rounded-lg border bg-chalk px-2.5 py-2 font-mono text-[11px] uppercase outline-none transition-colors ${
+                  kodeValid ? "border-ink/12 focus:border-coral" : "border-coral text-coral"
+                }`}
+              />
+
+              <input
+                value={row.name}
+                onChange={(event) => update(index, { name: event.target.value })}
+                placeholder="Nama warna (opsional)"
+                className="min-w-[120px] flex-1 rounded-lg border border-ink/12 bg-chalk px-3 py-2 text-xs outline-none transition-colors focus:border-coral"
+              />
+
+              <div className="flex shrink-0 gap-1">
+                <button
+                  type="button"
+                  onClick={() => move(index, -1)}
+                  disabled={index === 0}
+                  className="rounded-lg border border-ink/12 px-2 py-1.5 text-[11px] disabled:opacity-30"
+                  title="Naikkan"
+                >
+                  ↑
+                </button>
+                <button
+                  type="button"
+                  onClick={() => move(index, 1)}
+                  disabled={index === rows.length - 1}
+                  className="rounded-lg border border-ink/12 px-2 py-1.5 text-[11px] disabled:opacity-30"
+                  title="Turunkan"
+                >
+                  ↓
+                </button>
+                <button
+                  type="button"
+                  onClick={() => remove(index)}
+                  className="rounded-lg border border-coral/40 px-2 py-1.5 text-[11px] text-coral"
+                  title="Hapus warna"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {!kodeValid ? (
+                <span className="w-full text-[10px] text-coral">
+                  Kode warna harus 3 atau 6 karakter heksa, mis. #FF5A45.
+                </span>
+              ) : null}
+            </div>
+          );
+        })}
 
         {rows.length === 0 ? (
           <p className="rounded-lg border border-dashed border-ink/15 px-3 py-4 text-center text-[11px] text-ink/45">
-            Belum ada warna. Klik “Tambah warna” di bawah.
+            Belum ada warna. Klik “Tambah warna”, atau tempel kodenya di bawah.
           </p>
         ) : null}
       </div>
@@ -127,6 +229,39 @@ export function PaletteEditor({ value, onChange }: PaletteEditorProps) {
         </button>
         <span className="text-[11px] text-ink/40">{rows.length} warna</span>
       </div>
+
+      {/* Tempel banyak kode sekaligus */}
+      <form onSubmit={tempelBanyak} className="mt-3 border-t border-ink/10 pt-3">
+        <label className="block">
+          <span className="block text-[11px] font-medium text-ink/60">
+            Tempel kode warna (bisa beberapa sekaligus)
+          </span>
+          <span className="mt-0.5 block text-[10px] leading-snug text-ink/45">
+            Pakai kode lengkap 6 karakter, dipisah spasi / koma / baris baru. Namanya boleh ikut
+            ditulis di belakang kodenya. Contoh: <code>#FF5A45 Coral, #E8A33D Amber</code>
+          </span>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <input
+              value={tempel}
+              onChange={(event) => {
+                setTempel(event.target.value);
+                setPesan(null);
+              }}
+              placeholder="#FF5A45, #3F3D9E"
+              spellCheck={false}
+              className="min-w-[180px] flex-1 rounded-lg border border-ink/12 bg-chalk px-3 py-2 font-mono text-[11px] outline-none transition-colors focus:border-coral"
+            />
+            <button
+              type="submit"
+              disabled={!tempel.trim()}
+              className="shrink-0 rounded-full bg-ink px-4 py-2 text-[11px] font-medium text-paper transition-colors hover:bg-coral disabled:opacity-40"
+            >
+              Tambahkan
+            </button>
+          </div>
+        </label>
+        {pesan ? <p className="mt-2 text-[10px] text-ink/55">{pesan}</p> : null}
+      </form>
 
       <div className="mt-3 border-t border-ink/10 pt-3">
         <p className="text-[11px] text-ink/50">Ambil cepat dari warna yang sudah dipakai situs:</p>
@@ -151,6 +286,31 @@ export function PaletteEditor({ value, onChange }: PaletteEditorProps) {
       </div>
     </div>
   );
+}
+
+/**
+ * Rapikan kode warna jadi "#RRGGBB" huruf besar. Terima "FF5A45", "#ff5a45",
+ * "#F5A" (singkatan 3 karakter), dan spasi di sekelilingnya.
+ * Balikin null kalau bukan kode heksa yang sah.
+ */
+/** Sama seperti normalizeHex, tapi hanya menerima kode lengkap 6 digit. */
+function normalizeHex6(raw: string): string | null {
+  const bersih = raw.trim().replace(/^#/, "");
+  if (!/^[0-9a-fA-F]{6}$/.test(bersih)) return null;
+  return `#${bersih.toUpperCase()}`;
+}
+
+function normalizeHex(raw: string): string | null {
+  const bersih = raw.trim().replace(/^#/, "").replace(/[^0-9a-fA-F]/g, "");
+  if (bersih.length === 3) {
+    return `#${bersih
+      .split("")
+      .map((c) => c + c)
+      .join("")
+      .toUpperCase()}`;
+  }
+  if (bersih.length === 6) return `#${bersih.toUpperCase()}`;
+  return null;
 }
 
 /**
