@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { isAdmin } from "@/lib/admin-auth";
 import { getAdminItems, getSiteImages, type AdminPortfolioItem, type SiteImage } from "@/lib/portfolio";
+import { getAdminSettings } from "@/lib/site-settings.server";
+import type { SettingsMap } from "@/lib/site-settings";
 import { isSupabaseConfigured } from "@/lib/supabase";
 
 // Halaman admin selalu dirender fresh, nggak boleh di-cache.
@@ -32,10 +34,15 @@ export default async function AdminPage() {
   // sebelum ada JSX yang dibuat.
   let items: AdminPortfolioItem[] = [];
   let slots: Record<string, SiteImage> = {};
+  let settings: SettingsMap = {};
   let loadError: string | null = null;
 
   try {
-    [items, slots] = await Promise.all([getAdminItems(), getSiteImages()]);
+    [items, slots, settings] = await Promise.all([
+      getAdminItems(),
+      getSiteImages(),
+      getAdminSettings(),
+    ]);
   } catch (error) {
     loadError = error instanceof Error ? error.message : "Terjadi kesalahan tak terduga.";
   }
@@ -44,7 +51,7 @@ export default async function AdminPage() {
     return <Notice title="Gagal memuat data">{loadError}</Notice>;
   }
 
-  return <AdminDashboard items={items} slots={slots} />;
+  return <AdminDashboard items={items} slots={slots} settings={settings} />;
 }
 
 function Notice({ title, children }: { title: string; children: ReactNode }) {

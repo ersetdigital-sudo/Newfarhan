@@ -2,6 +2,9 @@
 
 import { useEffect, useRef } from "react";
 
+/** Diameter cincin dalam px — harus sinkron dengan class `h-12 w-12` di bawah. */
+const RING_SIZE = 48;
+
 export function CustomCursor() {
   const dotRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
@@ -43,16 +46,30 @@ export function CustomCursor() {
 
         onMouseMove = (event: MouseEvent) => {
           gsap.set(dot, { x: event.clientX, y: event.clientY });
-          gsap.to(ring, { x: event.clientX, y: event.clientY, duration: 0.55, ease: "power3.out" });
+          gsap.to(ring, { x: event.clientX, y: event.clientY, duration: 0.28, ease: "power3.out" });
         };
         window.addEventListener("mousemove", onMouseMove);
 
-        // Elemen magnetik: cincin membesar + label muncul
+        // Elemen magnetik: cincin membesar mengikuti UKURAN elemennya.
+        //
+        // Dulu selalu membesar 2.5x (48px → 120px). Untuk tombol sosial yang
+        // cuma 48px, cincin raksasa itu nutupin tombol sebelahnya dan bikin
+        // susah diklik. Sekarang besarannya proporsional: tombol kecil dapat
+        // cincin kecil, tombol lebar tetap dapat cincin besar + label "Lihat".
         document.querySelectorAll("[data-magnetic]").forEach((element) => {
           const onEnter = () => {
-            gsap.to(ring, { scale: 2.5, backgroundColor: "#FF5A45", duration: 0.35, ease: "power3.out" });
+            const rect = element.getBoundingClientRect();
+            const longest = Math.max(rect.width, rect.height);
+            const scale = Math.min(2.4, Math.max(1, (longest + 20) / RING_SIZE));
+
+            gsap.to(ring, {
+              scale,
+              backgroundColor: "#FF5A45",
+              duration: 0.22,
+              ease: "power3.out",
+            });
             ring.style.borderColor = "#FF5A45";
-            gsap.to(label, { opacity: 1, duration: 0.25, delay: 0.05 });
+            gsap.to(label, { opacity: scale >= 1.7 ? 1 : 0, duration: 0.18 });
             gsap.to(dot, { opacity: 0, duration: 0.2 });
           };
 

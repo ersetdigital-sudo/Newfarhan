@@ -4,17 +4,20 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { AdminPortfolioItem, SiteImage } from "@/lib/portfolio";
 import { SITE_SLOTS, SLOT_PAGES } from "@/lib/site-slots";
+import type { SettingsMap } from "@/lib/site-settings";
 import { ImageUploader } from "./ImageUploader";
 import { PortfolioItemsManager } from "./PortfolioItemsManager";
+import { SettingsManager } from "./SettingsManager";
 
 interface DashboardProps {
   items: AdminPortfolioItem[];
   slots: Record<string, SiteImage>;
+  settings: SettingsMap;
 }
 
-export function AdminDashboard({ items, slots }: DashboardProps) {
+export function AdminDashboard({ items, slots, settings }: DashboardProps) {
   const router = useRouter();
-  const [tab, setTab] = useState<"slots" | "items">("slots");
+  const [tab, setTab] = useState<"slots" | "items" | "text">("slots");
   const [localSlots, setLocalSlots] = useState(slots);
   const [savedSlot, setSavedSlot] = useState<string | null>(null);
 
@@ -81,6 +84,7 @@ export function AdminDashboard({ items, slots }: DashboardProps) {
           [
             { key: "slots", label: "Foto Halaman" },
             { key: "items", label: `Grid Portofolio (${items.length})` },
+            { key: "text", label: "Teks Kontak & Footer" },
           ] as const
         ).map((entry) => (
           <button
@@ -165,10 +169,12 @@ export function AdminDashboard({ items, slots }: DashboardProps) {
             );
           })}
         </section>
-      ) : (
+      ) : tab === "items" ? (
         <section className="mt-8">
           <PortfolioItemsManager items={items} />
         </section>
+      ) : (
+        <SettingsManager settings={settings} />
       )}
     </main>
   );

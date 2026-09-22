@@ -43,7 +43,7 @@ Semua foto portofolio bisa diganti lewat **`/admin`** tanpa menyentuh kode.
 
 ### Pembagian tugas
 
-- **Supabase** — data saja: `portfolio_items` (kartu grid) + `site_images` (9 slot foto tetap).
+- **Supabase** — data saja: `portfolio_items` (kartu grid), `site_images` (9 slot foto tetap), `site_settings` (teks kontak & footer).
 - **Cloudinary** (`omsjoxy8`) — penyimpanan dan pengiriman semua file gambar.
 
 ### Cara pakai
@@ -51,6 +51,9 @@ Semua foto portofolio bisa diganti lewat **`/admin`** tanpa menyentuh kode.
 1. Buka `/admin` (login pakai `ADMIN_PASSWORD`).
 2. Tab **Foto Halaman** — ganti 9 foto tetap di homepage, `/project`, dan About.
 3. Tab **Grid Portofolio** — tambah/edit/hapus/urutkan kartu di "Selected Works".
+4. Tab **Teks Kontak & Footer** — ganti judul, kalimat ajakan, email, tautan tombol
+   sosial, dan teks footer. Field yang dikosongkan otomatis balik ke teks bawaan,
+   jadi situs nggak pernah nampil teks bolong.
 
 ### Kenapa layout nggak bisa rusak
 
@@ -97,11 +100,15 @@ preset-nya nggak pernah bocor ke browser.
 
 ### Skema database
 
-Skema ada di `supabase/schema.sql` dan data awal di `supabase/seed.sql`.
-Jalankan ulang kapan saja lewat SQL Editor Supabase (keduanya idempotent):
+Skema ada di `supabase/schema.sql`, `supabase/settings.sql`, dan data awal di
+`supabase/seed.sql`. Jalankan ulang kapan saja lewat SQL Editor Supabase
+(semuanya idempotent):
 
 - `portfolio_items` — kartu grid (judul, kategori, deskripsi, urutan, published)
 - `site_images` — 9 slot foto tetap, primary key = nama slot
+- `site_settings` — teks section kontak & footer (key/value). API-nya cuma mau
+  menulis key yang ada di whitelist `SETTING_KEYS` (`src/lib/site-settings.ts`),
+  jadi browser nggak bisa nyelipin baris sembarangan.
 
 Kalau Supabase belum dikonfigurasi atau sedang error, situs otomatis balik ke data
 statis di `src/data/portfolio.ts`, jadi halaman nggak pernah kosong.

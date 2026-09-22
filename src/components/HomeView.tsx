@@ -14,14 +14,16 @@ import { Testimonials } from "@/components/sections/Testimonials";
 import { ContactFooter } from "@/components/sections/ContactFooter";
 import { cloudinaryImage } from "@/lib/cloudinary";
 import type { PortfolioItem, SiteImage } from "@/lib/portfolio";
+import type { SettingsMap } from "@/lib/site-settings";
 import { GRID_SPEC } from "@/lib/site-slots";
 
 interface HomeViewProps {
   items: PortfolioItem[];
   slots: Record<string, SiteImage>;
+  settings: SettingsMap;
 }
 
-export function HomeView({ items, slots }: HomeViewProps) {
+export function HomeView({ items, slots, settings }: HomeViewProps) {
   const [quickViewOpen, setQuickViewOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<PortfolioItem | null>(null);
 
@@ -114,13 +116,16 @@ export function HomeView({ items, slots }: HomeViewProps) {
             });
           });
 
-          // Magnetic hover
+          // Magnetic hover. Tarikan dilembutkan untuk elemen kecil: tombol
+          // bulat 48px nggak perlu digeser sejauh tombol hero yang lebar,
+          // kalau nggak dia kelihatan goyang dan susah diklik.
           document.querySelectorAll("[data-magnetic]").forEach((el) => {
             el.addEventListener("mousemove", ((e: MouseEvent) => {
               const r = (el as HTMLElement).getBoundingClientRect();
+              const pull = Math.min(1, Math.max(r.width, r.height) / 220);
               gsap.to(el, {
-                x: (e.clientX - (r.left + r.width / 2)) * 0.22,
-                y: (e.clientY - (r.top + r.height / 2)) * 0.28,
+                x: (e.clientX - (r.left + r.width / 2)) * 0.22 * pull,
+                y: (e.clientY - (r.top + r.height / 2)) * 0.28 * pull,
                 duration: 0.35,
               });
             }) as EventListener);
@@ -150,7 +155,7 @@ export function HomeView({ items, slots }: HomeViewProps) {
         <Process />
         <Testimonials />
         <About profileUrl={slots.profile?.image_url} profileAlt={slots.profile?.alt} />
-        <ContactFooter />
+        <ContactFooter settings={settings} />
       </main>
 
       <QuickViewModal
