@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { AdminPortfolioItem, SiteImage } from "@/lib/portfolio";
-import { SITE_SLOTS } from "@/lib/site-slots";
+import { SITE_SLOTS, SLOT_PAGES } from "@/lib/site-slots";
 import { ImageUploader } from "./ImageUploader";
 import { PortfolioItemsManager } from "./PortfolioItemsManager";
 
@@ -107,46 +107,70 @@ export function AdminDashboard({ items, slots }: DashboardProps) {
 
       {tab === "slots" ? (
         <section className="mt-8">
-          <div className="rounded-2xl border border-ink/10 bg-paper px-5 py-4">
-            <p className="text-xs text-ink/60">
-              Foto-foto ini punya kotak tetap di situs. Upload foto apa pun — sistem otomatis
-              memadukannya ke kanvas rasio yang benar, jadi <strong className="text-ink">nggak ada
-              bagian yang terpotong</strong> dan layout tetap rapi.
+          <div className="rounded-2xl border border-mustard/40 bg-mustard/10 px-5 py-4">
+            <p className="text-xs leading-relaxed text-ink/70">
+              <strong className="text-ink">Tiap slot itu per-tempat, bukan per-foto.</strong> Foto
+              yang sama boleh dipakai di beberapa slot, tapi mengganti di satu slot nggak otomatis
+              mengubah slot lain. Jadi kalau satu subjek muncul di homepage <em>dan</em> halaman
+              project, ganti di dua-duanya.
             </p>
           </div>
 
-          <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {SITE_SLOTS.map((spec) => (
-              <div key={spec.slot} className="rounded-2xl border border-ink/10 bg-chalk p-5">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <h3 className="font-display text-sm font-semibold">{spec.title}</h3>
-                    <p className="mt-0.5 text-[11px] leading-snug text-ink/45">{spec.where}</p>
-                  </div>
-                  <span className="shrink-0 rounded-full bg-paper px-2.5 py-1 text-[10px] font-medium text-ink/60">
-                    {spec.aspect}
-                  </span>
+          {SLOT_PAGES.map((page) => {
+            const specs = SITE_SLOTS.filter((spec) => spec.page === page);
+            if (specs.length === 0) return null;
+
+            return (
+              <div key={page} className="mt-9">
+                <div className="flex items-center justify-between gap-3 border-b border-ink/10 pb-3">
+                  <h2 className="font-display text-lg font-bold tracking-tight">{page}</h2>
+                  <a
+                    href={specs[0].pagePath}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[11px] font-medium text-coral hover:underline"
+                  >
+                    Lihat di situs ↗
+                  </a>
                 </div>
 
-                <div className="mt-4">
-                  <ImageUploader
-                    currentUrl={localSlots[spec.slot]?.image_url ?? spec.fallback}
-                    aspect={spec.aspect}
-                    folder="slots"
-                    buttonLabel="Ganti foto"
-                    onUploaded={(url) => saveSlot(spec.slot, url)}
-                  />
-                </div>
+                <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {specs.map((spec) => (
+                    <div key={spec.slot} className="rounded-2xl border border-ink/10 bg-chalk p-5">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <h3 className="font-display text-sm font-semibold">{spec.title}</h3>
+                          <p className="mt-0.5 text-[11px] leading-snug text-ink/45">
+                            {spec.where}
+                          </p>
+                        </div>
+                        <span className="shrink-0 rounded-full bg-paper px-2.5 py-1 text-[10px] font-medium text-ink/60">
+                          {spec.aspect}
+                        </span>
+                      </div>
 
-                <div className="mt-3 flex items-center justify-between text-[11px] text-ink/45">
-                  <span>
-                    Kanvas {spec.width}×{spec.height}px
-                  </span>
-                  {savedSlot === spec.slot ? <span>Tersimpan ✓</span> : null}
+                      <div className="mt-4">
+                        <ImageUploader
+                          currentUrl={localSlots[spec.slot]?.image_url ?? spec.fallback}
+                          aspect={spec.aspect}
+                          folder="slots"
+                          buttonLabel="Ganti foto"
+                          onUploaded={(url) => saveSlot(spec.slot, url)}
+                        />
+                      </div>
+
+                      <div className="mt-3 flex items-center justify-between text-[11px] text-ink/45">
+                        <span>
+                          Kanvas {spec.width}×{spec.height}px
+                        </span>
+                        {savedSlot === spec.slot ? <span>Tersimpan ✓</span> : null}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            ))}
-          </div>
+            );
+          })}
         </section>
       ) : (
         <section className="mt-8">

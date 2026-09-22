@@ -5,36 +5,46 @@
  * nggak bisa mengubah bentuk kotaknya. Jadi mengganti foto nggak akan
  * pernah merusak layout, di breakpoint mana pun.
  *
- * Kalau rasio di file ini diubah, ubah juga rasio di komponen terkait
- * (CoverImage, FeaturedWork, Gallery, About) supaya tetap sinkron.
+ * CATATAN PENTING: slot itu per-TEMPAT, bukan per-FOTO. Foto yang sama
+ * boleh dipakai di beberapa slot sekaligus (mis. foto signage ARVA dipakai
+ * di kartu "Environmental" homepage DAN di gallery halaman /project), tapi
+ * mengganti di satu slot nggak otomatis mengubah slot lain. Jadi di panel
+ * admin setiap slot ditandai halaman mana yang kena.
  */
 
 export interface SlotSpec {
   slot: string;
   /** Judul yang tampil di halaman admin */
   title: string;
-  /** Dipakai di bagian mana */
+  /** Halaman tempat foto ini muncul — dipakai buat mengelompokkan di admin */
+  page: string;
+  /** Path halaman terkait, buat tombol "Lihat di situs" */
+  pagePath: string;
+  /** Keterangan posisinya di halaman */
   where: string;
   /** Rasio terkunci, format "w:h" */
   aspect: string;
-  /** Ukuran kanvas yang dipakai saat upload dinormalisasi */
+  /** Ukuran kanvas yang dipakai saat gambar dikirim (Cloudinary memadu ke sini) */
   width: number;
   height: number;
-  /** Gambar lama, dipakai sebagai fallback kalau Supabase belum diisi */
+  /** Gambar lama, dipakai sebagai fallback kalau database belum diisi */
   fallback: string;
   /** Label kecil yang tampil di kartu (kosongkan kalau nggak dipakai) */
   label: string;
   alt: string;
 }
 
-/** Warna kanvas untuk padding foto (nyatu sama bg section di situs). */
+/** Warna kanvas untuk bantalan foto (nyatu sama bg section di situs). */
 export const PAD_COLOR = "#F7F1E7";
 
 export const SITE_SLOTS: SlotSpec[] = [
+  // ── HOMEPAGE ──────────────────────────────────────────────
   {
     slot: "featured_main",
-    title: "Featured — Foto Utama",
-    where: "Homepage · Featured Work (kartu ARVA)",
+    title: "ARVA — kartu besar",
+    page: "Homepage",
+    pagePath: "/#portfolio",
+    where: "Featured Work · kartu besar di kiri",
     aspect: "1:1",
     width: 1200,
     height: 1200,
@@ -44,8 +54,10 @@ export const SITE_SLOTS: SlotSpec[] = [
   },
   {
     slot: "featured_stationery",
-    title: "Featured — Kartu 1",
-    where: "Homepage · Featured Work (kartu kecil)",
+    title: "ARVA — kartu kecil 1 (Stationery)",
+    page: "Homepage",
+    pagePath: "/#portfolio",
+    where: "Featured Work · kartu kecil paling atas di kanan",
     aspect: "2:1",
     width: 1600,
     height: 800,
@@ -55,8 +67,10 @@ export const SITE_SLOTS: SlotSpec[] = [
   },
   {
     slot: "featured_environmental",
-    title: "Featured — Kartu 2",
-    where: "Homepage · Featured Work (kartu kecil)",
+    title: "ARVA — kartu kecil 2 (Environmental)",
+    page: "Homepage",
+    pagePath: "/#portfolio",
+    where: "Featured Work · kartu kecil di kanan, tengah",
     aspect: "2:1",
     width: 1600,
     height: 800,
@@ -66,8 +80,10 @@ export const SITE_SLOTS: SlotSpec[] = [
   },
   {
     slot: "featured_digital",
-    title: "Featured — Kartu 3",
-    where: "Homepage · Featured Work (kartu kecil)",
+    title: "ARVA — kartu kecil 3 (Digital)",
+    page: "Homepage",
+    pagePath: "/#portfolio",
+    where: "Featured Work · kartu kecil paling bawah di kanan",
     aspect: "2:1",
     width: 1600,
     height: 800,
@@ -76,9 +92,26 @@ export const SITE_SLOTS: SlotSpec[] = [
     alt: "ARVA — social feed system",
   },
   {
+    slot: "profile",
+    title: "Foto profil (bulat)",
+    page: "Homepage",
+    pagePath: "/#about",
+    where: "About · foto bulat di kartu profil",
+    aspect: "1:1",
+    width: 800,
+    height: 800,
+    fallback: "/images/c98c49c7-b8f7-4763-ba04-805ebfb930e0.png",
+    label: "",
+    alt: "Farhan Raka.K",
+  },
+
+  // ── HALAMAN PROJECT ───────────────────────────────────────
+  {
     slot: "project_cover",
-    title: "Cover halaman Project",
-    where: "/project · gambar besar paling atas",
+    title: "ARVA — cover besar",
+    page: "Halaman Project",
+    pagePath: "/project",
+    where: "Gambar besar tepat di bawah judul",
     aspect: "2:1",
     width: 1600,
     height: 800,
@@ -88,8 +121,10 @@ export const SITE_SLOTS: SlotSpec[] = [
   },
   {
     slot: "project_gallery_1",
-    title: "Gallery 1",
-    where: "/project · kartu lebar (2/3)",
+    title: "Gallery 1 — kartu lebar",
+    page: "Halaman Project",
+    pagePath: "/project",
+    where: "Galeri · kartu lebar (2/3) di baris pertama",
     aspect: "16:9",
     width: 1600,
     height: 900,
@@ -99,8 +134,10 @@ export const SITE_SLOTS: SlotSpec[] = [
   },
   {
     slot: "project_gallery_2",
-    title: "Gallery 2",
-    where: "/project · kartu kecil (1/3)",
+    title: "Gallery 2 — kartu kecil",
+    page: "Halaman Project",
+    pagePath: "/project",
+    where: "Galeri · kartu kecil (1/3) di baris pertama",
     aspect: "5:6",
     width: 1000,
     height: 1200,
@@ -110,25 +147,16 @@ export const SITE_SLOTS: SlotSpec[] = [
   },
   {
     slot: "project_gallery_3",
-    title: "Gallery 3",
-    where: "/project · kartu full width",
+    title: "Gallery 3 — full width",
+    page: "Halaman Project",
+    pagePath: "/project",
+    where: "Galeri · kartu lebar penuh di baris bawah",
     aspect: "2.6:1",
     width: 2080,
     height: 800,
     fallback: "/images/6b73f91c-313e-4ee0-b3ae-5988bf16bf95.png",
     label: "Environmental",
     alt: "ARVA — signage & facade",
-  },
-  {
-    slot: "profile",
-    title: "Foto Profil",
-    where: "Homepage · About (bulat)",
-    aspect: "1:1",
-    width: 800,
-    height: 800,
-    fallback: "/images/c98c49c7-b8f7-4763-ba04-805ebfb930e0.png",
-    label: "",
-    alt: "Farhan Raka.K",
   },
 ];
 
@@ -140,6 +168,9 @@ export const GRID_SPEC = {
   label: "Kartu grid portofolio",
   where: "Homepage · Selected Works + popup quick view",
 };
+
+/** Urutan halaman di panel admin. */
+export const SLOT_PAGES = ["Homepage", "Halaman Project"];
 
 export const CATEGORY_LABELS: Record<string, string> = {
   all: "All",
