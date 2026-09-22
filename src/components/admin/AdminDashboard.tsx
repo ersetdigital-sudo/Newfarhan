@@ -17,7 +17,6 @@ export function AdminDashboard({ items, slots }: DashboardProps) {
   const [tab, setTab] = useState<"slots" | "items">("slots");
   const [localSlots, setLocalSlots] = useState(slots);
   const [savedSlot, setSavedSlot] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   async function saveSlot(slot: string, imageUrl: string) {
     const response = await fetch(`/api/admin/slots/${encodeURIComponent(slot)}`, {
@@ -98,12 +97,6 @@ export function AdminDashboard({ items, slots }: DashboardProps) {
           </button>
         ))}
       </nav>
-
-      {error ? (
-        <p className="mt-6 rounded-2xl border border-coral/30 bg-coral/5 px-4 py-3 text-xs text-coral">
-          {error}
-        </p>
-      ) : null}
 
       {tab === "slots" ? (
         <section className="mt-8">

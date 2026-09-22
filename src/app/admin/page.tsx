@@ -1,7 +1,8 @@
+import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { isAdmin } from "@/lib/admin-auth";
-import { getAdminItems, getSiteImages } from "@/lib/portfolio";
+import { getAdminItems, getSiteImages, type AdminPortfolioItem, type SiteImage } from "@/lib/portfolio";
 import { isSupabaseConfigured } from "@/lib/supabase";
 
 // Halaman admin selalu dirender fresh, nggak boleh di-cache.
@@ -17,34 +18,42 @@ export default async function AdminPage() {
 
   if (!isSupabaseConfigured) {
     return (
-      <main className="mx-auto max-w-[720px] px-6 py-20">
-        <div className="rounded-[2rem] border border-coral/30 bg-coral/5 p-8">
-          <h1 className="font-display text-xl font-bold">Supabase belum dikonfigurasi</h1>
-          <p className="mt-3 text-sm leading-relaxed text-ink/65">
-            Isi <code className="rounded bg-chalk px-1.5 py-0.5">NEXT_PUBLIC_SUPABASE_URL</code>,{" "}
-            <code className="rounded bg-chalk px-1.5 py-0.5">NEXT_PUBLIC_SUPABASE_ANON_KEY</code>,
-            dan <code className="rounded bg-chalk px-1.5 py-0.5">SUPABASE_SERVICE_ROLE_KEY</code> di
-            file <code className="rounded bg-chalk px-1.5 py-0.5">.env.local</code>, lalu jalankan
-            ulang dev server.
-          </p>
-        </div>
-      </main>
+      <Notice title="Supabase belum dikonfigurasi">
+        Isi <code className="rounded bg-chalk px-1.5 py-0.5">NEXT_PUBLIC_SUPABASE_URL</code>,{" "}
+        <code className="rounded bg-chalk px-1.5 py-0.5">NEXT_PUBLIC_SUPABASE_ANON_KEY</code>, dan{" "}
+        <code className="rounded bg-chalk px-1.5 py-0.5">SUPABASE_SERVICE_ROLE_KEY</code> di file{" "}
+        <code className="rounded bg-chalk px-1.5 py-0.5">.env.local</code>, lalu jalankan ulang dev
+        server.
+      </Notice>
     );
   }
 
+  // Pengambilan data dipisah dari render supaya errornya bisa ditangani dulu
+  // sebelum ada JSX yang dibuat.
+  let items: AdminPortfolioItem[] = [];
+  let slots: Record<string, SiteImage> = {};
+  let loadError: string | null = null;
+
   try {
-    const [items, slots] = await Promise.all([getAdminItems(), getSiteImages()]);
-    return <AdminDashboard items={items} slots={slots} />;
+    [items, slots] = await Promise.all([getAdminItems(), getSiteImages()]);
   } catch (error) {
-    return (
-      <main className="mx-auto max-w-[720px] px-6 py-20">
-        <div className="rounded-[2rem] border border-coral/30 bg-coral/5 p-8">
-          <h1 className="font-display text-xl font-bold">Gagal memuat data</h1>
-          <p className="mt-3 text-sm leading-relaxed text-ink/65">
-            {error instanceof Error ? error.message : "Terjadi kesalahan tak terduga."}
-          </p>
-        </div>
-      </main>
-    );
+    loadError = error instanceof Error ? error.message : "Terjadi kesalahan tak terduga.";
   }
+
+  if (loadError) {
+    return <Notice title="Gagal memuat data">{loadError}</Notice>;
+  }
+
+  return <AdminDashboard items={items} slots={slots} />;
+}
+
+function Notice({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <main className="mx-auto max-w-[720px] px-6 py-20">
+      <div className="rounded-[2rem] border border-coral/30 bg-coral/5 p-8">
+        <h1 className="font-display text-xl font-bold">{title}</h1>
+        <p className="mt-3 text-sm leading-relaxed text-ink/65">{children}</p>
+      </div>
+    </main>
+  );
 }

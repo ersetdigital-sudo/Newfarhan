@@ -29,12 +29,12 @@ export function ProjectNavigation() {
           Semua Karya
         </Link>
 
-        <a
+        <Link
           href="/#contact"
           className="whitespace-nowrap rounded-full bg-ink px-4 py-2.5 text-[12px] font-medium text-paper transition-colors hover:bg-coral md:px-5 md:text-[13px]"
         >
           Start a Project
-        </a>
+        </Link>
       </nav>
     </header>
   );

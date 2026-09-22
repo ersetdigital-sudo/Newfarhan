@@ -1,14 +1,12 @@
 "use client";
 
-import { useScrollReveal } from "@/hooks/useScrollReveal";
+import Link from "next/link";
 
 export function NextProjectCTA() {
-  const revealRef = useScrollReveal();
-
   return (
     <section className="border-t border-ink/10">
       <div className="mx-auto max-w-[1200px] px-6 py-20">
-        <a data-magnetic="" href="/#works" className="reveal group flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <Link data-magnetic="" href="/#works" className="reveal group flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.2em] text-ink/40">Selanjutnya</p>
             <h2 className="mt-3 font-display text-4xl font-bold tracking-[-0.03em] md:text-6xl">
@@ -21,7 +19,7 @@ export function NextProjectCTA() {
               <path d="M4 12h15M13 6l6 6-6 6" />
             </svg>
           </span>
-        </a>
+        </Link>
       </div>
     </section>
   );

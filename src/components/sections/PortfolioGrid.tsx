@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { cloudinaryImage } from "@/lib/cloudinary";
 import type { PortfolioItem } from "@/lib/portfolio";
@@ -19,16 +19,12 @@ const FILTER_KEYS = ["all", "branding", "logo", "apparel", "social", "poster"];
 
 export function PortfolioGrid({ items, onQuickView }: PortfolioGridProps) {
   const [activeFilter, setActiveFilter] = useState("all");
-  const [filteredItems, setFilteredItems] = useState(items);
   const ref = useScrollReveal();
 
-  useEffect(() => {
-    if (activeFilter === "all") {
-      setFilteredItems(items);
-    } else {
-      setFilteredItems(items.filter((item) => item.category === activeFilter));
-    }
-  }, [activeFilter, items]);
+  // Diturunkan langsung dari props, bukan disimpan di state — biar nggak ada
+  // render berantai waktu filter atau daftar item berubah.
+  const filteredItems =
+    activeFilter === "all" ? items : items.filter((item) => item.category === activeFilter);
 
   return (
     <>

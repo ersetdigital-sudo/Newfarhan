@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 export function Navigation() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -9,9 +10,9 @@ export function Navigation() {
     <>
       <header className="sticky top-0 z-50 border-b border-ink/5 bg-paper/75 backdrop-blur-xl">
         <nav className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-5">
-          <a href="/" className="font-display text-[15px] font-extrabold tracking-tight">
+          <Link href="/" className="font-display text-[15px] font-extrabold tracking-tight">
             Farhan Raka<span className="text-coral">.K</span>
-          </a>
+          </Link>
           <ul className="hidden items-center gap-1 rounded-full border border-ink/10 bg-chalk px-2 py-1.5 text-[13px] shadow-[0_1px_2px_rgba(20,19,26,.04)] md:flex">
             <li><a href="#home" className="rounded-full px-4 py-1.5 transition-colors hover:bg-ink/5">Home</a></li>
             <li><a href="#portfolio" className="rounded-full px-4 py-1.5 transition-colors hover:bg-ink/5">Portfolio</a></li>
