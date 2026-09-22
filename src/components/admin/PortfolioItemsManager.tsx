@@ -1,0 +1,404 @@
+"use client";
+
+import { useState, type FormEvent, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
+import type { AdminPortfolioItem } from "@/lib/portfolio";
+import { CATEGORY_KEYS, CATEGORY_LABELS, GRID_SPEC } from "@/lib/site-slots";
+import { ImageUploader } from "./ImageUploader";
+
+interface ManagerProps {
+  items: AdminPortfolioItem[];
+}
+
+export function PortfolioItemsManager({ items }: ManagerProps) {
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+
+  async function persistOrder(slugs: string[]) {
+    const response = await fetch("/api/admin/items/reorder", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slugs }),
+    });
+    if (!response.ok) {
+      const payload = await response.json().catch(() => null);
+      setError(payload?.error || "Gagal menyimpan urutan.");
+      return;
+    }
+    router.refresh();
+  }
+
+  function move(index: number, direction: -1 | 1) {
+    const target = index + direction;
+    if (target < 0 || target >= items.length) return;
+    const slugs = items.map((item) => item.slug);
+    [slugs[index], slugs[target]] = [slugs[target], slugs[index]];
+    void persistOrder(slugs);
+  }
+
+  async function remove(slug: string, title: string) {
+    if (!window.confirm(`Hapus "${title}"? Foto di Storage ikut dihapus.`)) return;
+    const response = await fetch(`/api/admin/items/${encodeURIComponent(slug)}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      const payload = await response.json().catch(() => null);
+      setError(payload?.error || "Gagal menghapus.");
+      return;
+    }
+    router.refresh();
+  }
+
+  return (
+    <div className="space-y-5">
+      <div className="rounded-2xl border border-ink/10 bg-paper px-5 py-4">
+        <p className="text-xs text-ink/60">
+          Semua foto di sini otomatis dipadu ke kanvas{" "}
+          <strong className="text-ink">
+            {GRID_SPEC.width}×{GRID_SPEC.height}px ({GRID_SPEC.aspect})
+          </strong>
+          . Mau foto apa pun yang di-upload, bentuk kartunya nggak akan berubah.
+        </p>
+      </div>
+
+      {error ? (
+        <p className="rounded-2xl border border-coral/30 bg-coral/5 px-4 py-3 text-xs text-coral">
+          {error}
+        </p>
+      ) : null}
+
+      <NewItemForm onCreated={() => router.refresh()} />
+
+      <div className="space-y-4">
+        {items.map((item, index) => (
+          <ItemCard
+            key={item.slug}
+            item={item}
+            index={index}
+            total={items.length}
+            onMove={move}
+            onDelete={() => remove(item.slug, item.title)}
+            onSaved={() => router.refresh()}
+            onError={setError}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function NewItemForm({ onCreated }: { onCreated: () => void }) {
+  const [imageUrl, setImageUrl] = useState("");
+  const [title, setTitle] = useState("");
+  const [category, setCategory] = useState<string>("branding");
+  const [subtitle, setSubtitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function submit(event: FormEvent) {
+    event.preventDefault();
+    setBusy(true);
+    setError(null);
+
+    const response = await fetch("/api/admin/items", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title,
+        category,
+        subtitle,
+        description,
+        image_url: imageUrl,
+        image_alt: title,
+      }),
+    });
+
+    if (!response.ok) {
+      const payload = await response.json().catch(() => null);
+      setError(payload?.error || "Gagal menambah proyek.");
+      setBusy(false);
+      return;
+    }
+
+    setImageUrl("");
+    setTitle("");
+    setSubtitle("");
+    setDescription("");
+    setBusy(false);
+    onCreated();
+  }
+
+  return (
+    <form onSubmit={submit} className="rounded-2xl border border-ink/10 bg-chalk p-5">
+      <h3 className="font-display text-sm font-semibold">Tambah Proyek Baru</h3>
+
+      <div className="mt-4 grid gap-4 md:grid-cols-[180px,1fr]">
+        <ImageUploader
+          currentUrl={imageUrl}
+          aspect={GRID_SPEC.aspect}
+          folder="grid"
+          buttonLabel="Upload foto"
+          onUploaded={setImageUrl}
+        />
+
+        <div className="grid content-start gap-3">
+          <Field label="Judul">
+            <input
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+              placeholder="Nexus FC — Away Kit"
+              className="input"
+            />
+          </Field>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Field label="Kategori">
+              <select
+                value={category}
+                onChange={(event) => setCategory(event.target.value)}
+                className="input"
+              >
+                {CATEGORY_KEYS.map((key) => (
+                  <option key={key} value={key}>
+                    {CATEGORY_LABELS[key]}
+                  </option>
+                ))}
+              </select>
+            </Field>
+
+            <Field label="Label kecil di kartu">
+              <input
+                value={subtitle}
+                onChange={(event) => setSubtitle(event.target.value)}
+                placeholder="Jersey & Apparel"
+                className="input"
+              />
+            </Field>
+          </div>
+
+          <Field label="Deskripsi (isi popup)">
+            <textarea
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
+              rows={3}
+              placeholder="Cerita singkat proyeknya…"
+              className="input resize-none"
+            />
+          </Field>
+        </div>
+      </div>
+
+      {error ? <p className="mt-3 text-xs text-coral">{error}</p> : null}
+
+      <button
+        type="submit"
+        disabled={busy || !imageUrl || !title.trim()}
+        className="mt-4 rounded-full bg-coral px-5 py-2.5 text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-40"
+      >
+        {busy ? "Menyimpan…" : "Tambah ke grid"}
+      </button>
+    </form>
+  );
+}
+
+function ItemCard({
+  item,
+  index,
+  total,
+  onMove,
+  onDelete,
+  onSaved,
+  onError,
+}: {
+  item: AdminPortfolioItem;
+  index: number;
+  total: number;
+  onMove: (index: number, direction: -1 | 1) => void;
+  onDelete: () => void;
+  onSaved: () => void;
+  onError: (message: string) => void;
+}) {
+  const [draft, setDraft] = useState({
+    title: item.title,
+    category: item.category,
+    subtitle: item.subtitle,
+    description: item.popupDescription,
+    image_url: item.image,
+    published: item.published,
+  });
+  const [busy, setBusy] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  async function save() {
+    setBusy(true);
+    setSaved(false);
+
+    const response = await fetch(`/api/admin/items/${encodeURIComponent(item.slug)}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(draft),
+    });
+
+    if (!response.ok) {
+      const payload = await response.json().catch(() => null);
+      onError(payload?.error || "Gagal menyimpan perubahan.");
+      setBusy(false);
+      return;
+    }
+
+    setBusy(false);
+    setSaved(true);
+    onSaved();
+  }
+
+  return (
+    <div className="rounded-2xl border border-ink/10 bg-chalk p-5">
+      <div className="grid gap-5 md:grid-cols-[160px,1fr]">
+        <div>
+          <ImageUploader
+            currentUrl={draft.image_url}
+            aspect={GRID_SPEC.aspect}
+            folder="grid"
+            buttonLabel="Ganti foto"
+            onUploaded={async (url) => {
+              setDraft((prev) => ({ ...prev, image_url: url }));
+              // Langsung simpan supaya foto baru nggak hilang kalau admin
+              // lupa klik tombol simpan.
+              const response = await fetch(
+                `/api/admin/items/${encodeURIComponent(item.slug)}`,
+                {
+                  method: "PATCH",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ image_url: url }),
+                }
+              );
+              if (!response.ok) {
+                const payload = await response.json().catch(() => null);
+                throw new Error(payload?.error || "Foto ter-upload tapi gagal disimpan.");
+              }
+              onSaved();
+            }}
+          />
+
+          <div className="mt-2 flex items-center justify-between gap-2">
+            <button
+              type="button"
+              onClick={() => onMove(index, -1)}
+              disabled={index === 0}
+              className="flex-1 rounded-lg border border-ink/12 py-1.5 text-xs disabled:opacity-30"
+              title="Naikkan urutan"
+            >
+              ↑
+            </button>
+            <span className="text-[11px] text-ink/40">
+              {index + 1}/{total}
+            </span>
+            <button
+              type="button"
+              onClick={() => onMove(index, 1)}
+              disabled={index === total - 1}
+              className="flex-1 rounded-lg border border-ink/12 py-1.5 text-xs disabled:opacity-30"
+              title="Turunkan urutan"
+            >
+              ↓
+            </button>
+          </div>
+        </div>
+
+        <div className="grid content-start gap-3">
+          <div className="flex items-center justify-between gap-3">
+            <code className="text-[11px] text-ink/40">{item.slug}</code>
+            <label className="flex items-center gap-2 text-[11px] text-ink/60">
+              <input
+                type="checkbox"
+                checked={draft.published}
+                onChange={(event) =>
+                  setDraft((prev) => ({ ...prev, published: event.target.checked }))
+                }
+              />
+              Tampil di situs
+            </label>
+          </div>
+
+          <Field label="Judul">
+            <input
+              value={draft.title}
+              onChange={(event) => setDraft((prev) => ({ ...prev, title: event.target.value }))}
+              className="input"
+            />
+          </Field>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Field label="Kategori">
+              <select
+                value={draft.category}
+                onChange={(event) =>
+                  setDraft((prev) => ({ ...prev, category: event.target.value }))
+                }
+                className="input"
+              >
+                {CATEGORY_KEYS.map((key) => (
+                  <option key={key} value={key}>
+                    {CATEGORY_LABELS[key]}
+                  </option>
+                ))}
+              </select>
+            </Field>
+
+            <Field label="Label kecil di kartu">
+              <input
+                value={draft.subtitle}
+                onChange={(event) =>
+                  setDraft((prev) => ({ ...prev, subtitle: event.target.value }))
+                }
+                className="input"
+              />
+            </Field>
+          </div>
+
+          <Field label="Deskripsi (isi popup)">
+            <textarea
+              value={draft.description}
+              onChange={(event) =>
+                setDraft((prev) => ({ ...prev, description: event.target.value }))
+              }
+              rows={3}
+              className="input resize-none"
+            />
+          </Field>
+
+          <div className="flex items-center gap-3 pt-1">
+            <button
+              type="button"
+              onClick={save}
+              disabled={busy}
+              className="rounded-full bg-ink px-5 py-2.5 text-xs font-medium text-paper transition-colors hover:bg-coral disabled:opacity-50"
+            >
+              {busy ? "Menyimpan…" : "Simpan perubahan"}
+            </button>
+
+            {saved ? <span className="text-[11px] text-ink/45">Tersimpan ✓</span> : null}
+
+            <button
+              type="button"
+              onClick={onDelete}
+              className="ml-auto text-[11px] text-coral hover:underline"
+            >
+              Hapus proyek
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Field({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <label className="block">
+      <span className="text-[11px] font-medium text-ink/55">{label}</span>
+      <div className="mt-1.5">{children}</div>
+    </label>
+  );
+}

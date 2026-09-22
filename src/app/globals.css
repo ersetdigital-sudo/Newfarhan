@@ -42,6 +42,27 @@ body {
   color: #fff;
 }
 
+/* ─── Form Control (dipakai halaman /admin) ─── */
+.input {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(20, 19, 26, 0.12);
+  background: #fbf9f5;
+  padding: 0.625rem 0.875rem;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: #14131a;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.input:focus {
+  border-color: #ff5a45;
+}
+.input[type="file"] {
+  padding: 0.5rem;
+}
+
 /* ─── Gradient Text ─── */
 .grad-text {
   background: linear-gradient(100deg, #ff5a45, #e8a33d 55%, #c96a4b);

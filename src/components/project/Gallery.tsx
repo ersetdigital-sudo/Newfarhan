@@ -2,17 +2,40 @@
 
 import { useEffect, useState } from "react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { cloudinaryImage } from "@/lib/cloudinary";
+import type { SiteImage } from "@/lib/portfolio";
+import { slotCanvas, slotSpec } from "@/lib/site-slots";
 
-export function Gallery() {
+interface GalleryProps {
+  slots: Record<string, SiteImage>;
+}
+
+/**
+ * Tiga kartu gallery. Lebar kolom dan rasionya dikunci di sini, jadi admin
+ * cuma bisa mengganti isi gambarnya.
+ */
+const GALLERY_LAYOUT = [
+  { slot: "project_gallery_1", span: "col-span-full md:col-span-4", aspect: "aspect-[16/9]" },
+  { slot: "project_gallery_2", span: "col-span-full md:col-span-2", aspect: "aspect-[5/6]" },
+  { slot: "project_gallery_3", span: "col-span-full", aspect: "aspect-[13/5]" },
+];
+
+export function Gallery({ slots }: GalleryProps) {
   const ref = useScrollReveal();
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxSrc, setLightboxSrc] = useState("");
 
-  const images = [
-    { src: "/images/80931dd2-bdaa-4375-809d-307fa7ccf0e0.png", alt: "ARVA — stationery suite", className: "col-span-full overflow-hidden rounded-[1.75rem] border border-ink/8 md:col-span-4" },
-    { src: "/images/d70331f8-fda6-4948-a310-7da323f5f60b.png", alt: "ARVA — social feed system", className: "col-span-full overflow-hidden rounded-[1.75rem] border border-ink/8 md:col-span-2" },
-    { src: "/images/6b73f91c-313e-4ee0-b3ae-5988bf16bf95.png", alt: "ARVA — signage &amp; facade", className: "col-span-full overflow-hidden rounded-[1.75rem] border border-ink/8" },
-  ];
+  const images = GALLERY_LAYOUT.map((entry) => {
+    const spec = slotSpec(entry.slot);
+    const image = slots[entry.slot];
+    const canvas = slotCanvas(entry.slot);
+    return {
+      src: cloudinaryImage(image?.image_url || spec?.fallback || "", canvas.width, canvas.height),
+      alt: image?.alt || spec?.alt || spec?.title || "",
+      span: entry.span,
+      aspect: entry.aspect,
+    };
+  });
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -40,17 +63,21 @@ export function Gallery() {
         </div>
         <div className="grid gap-5 md:grid-cols-6">
           {images.map((img, i) => (
-            <div key={i} className={`reveal ${img.className}`}>
-              <img
-                data-zoom=""
-                src={img.src}
-                alt={img.alt}
-                className="h-full w-full object-cover transition-transform duration-[1100ms] hover:scale-[1.05] md:h-[440px]"
-                onClick={() => {
-                  setLightboxSrc(img.src);
-                  setLightboxOpen(true);
-                }}
-              />
+            <div key={i} className={`reveal overflow-hidden rounded-[1.75rem] border border-ink/8 ${img.span}`}>
+              <div className={`relative w-full ${img.aspect} bg-[#F7F1E7]`}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  data-zoom=""
+                  src={img.src}
+                  alt={img.alt}
+                  loading="lazy"
+                  className="h-full w-full object-cover transition-transform duration-[1100ms] hover:scale-[1.05]"
+                  onClick={() => {
+                    setLightboxSrc(img.src);
+                    setLightboxOpen(true);
+                  }}
+                />
+              </div>
             </div>
           ))}
         </div>
@@ -66,6 +93,7 @@ export function Gallery() {
           if (e.target === e.currentTarget) setLightboxOpen(false);
         }}
       >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           id="lightbox-img"
           src={lightboxSrc}
@@ -74,6 +102,7 @@ export function Gallery() {
         />
         <button
           id="lightbox-close"
+          aria-label="Tutup"
           className="absolute right-6 top-6 grid h-11 w-11 place-items-center rounded-full border border-white/30 text-white"
           onClick={() => setLightboxOpen(false)}
         >

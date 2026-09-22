@@ -34,3 +34,73 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+---
+
+## Panel Admin, Supabase & Cloudinary
+
+Semua foto portofolio bisa diganti lewat **`/admin`** tanpa menyentuh kode.
+
+### Pembagian tugas
+
+- **Supabase** — data saja: `portfolio_items` (kartu grid) + `site_images` (9 slot foto tetap).
+- **Cloudinary** (`omsjoxy8`) — penyimpanan dan pengiriman semua file gambar.
+
+### Cara pakai
+
+1. Buka `/admin` (login pakai `ADMIN_PASSWORD`).
+2. Tab **Foto Halaman** — ganti 9 foto tetap di homepage, `/project`, dan About.
+3. Tab **Grid Portofolio** — tambah/edit/hapus/urutkan kartu di "Selected Works".
+
+### Kenapa layout nggak bisa rusak
+
+Setiap slot punya **rasio yang dikunci di kode**, bukan di database:
+
+| Slot | Rasio | Kanvas |
+|---|---|---|
+| Kartu grid portofolio | 4:5 | 1200 × 1500 |
+| Featured utama, foto profil | 1:1 | 1200×1200 · 800×800 |
+| Featured kartu kecil, cover `/project` | 2:1 | 1600 × 800 |
+| Gallery 1 / 2 / 3 | 16:9 · 5:6 · 2.6:1 | 1600×900 · 1000×1200 · 2080×800 |
+
+File asli disimpan utuh di Cloudinary. Saat dikirim ke browser, Cloudinary
+memakai transformasi `c_pad,w_&lt;width&gt;,h_&lt;height&gt;,b_rgb:F7F1E7,f_auto,q_auto`
+(lihat `src/lib/cloudinary.ts`): foto diperkecil supaya muat utuh di kanvas,
+sisa ruangnya diisi warna krem. Jadi **nggak ada bagian foto yang terpotong**,
+kanvasnya selalu persis rasio yang diminta, dan `f_auto` bikin Cloudinary
+otomatis mengirim WebP/AVIF.
+
+Contoh nyata: PNG 1536×1024 (2,1 MB) → terkirim 1200×1500 WebP (70 KB).
+
+### Environment variables
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+ADMIN_PASSWORD=
+ADMIN_SESSION_SECRET=
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_UPLOAD_PRESET=
+```
+
+`SUPABASE_SERVICE_ROLE_KEY` dan `CLOUDINARY_UPLOAD_PRESET` hanya dipakai di server
+(API route `/api/admin/*`), jangan pernah diimpor dari komponen client.
+Preset upload-nya *unsigned*, tapi endpoint-nya dijaga sesi admin — jadi nama
+preset-nya nggak pernah bocor ke browser.
+
+### Skema database
+
+Skema ada di `supabase/schema.sql` dan data awal di `supabase/seed.sql`.
+Jalankan ulang kapan saja lewat SQL Editor Supabase (keduanya idempotent):
+
+- `portfolio_items` — kartu grid (judul, kategori, deskripsi, urutan, published)
+- `site_images` — 9 slot foto tetap, primary key = nama slot
+
+Kalau Supabase belum dikonfigurasi atau sedang error, situs otomatis balik ke data
+statis di `src/data/portfolio.ts`, jadi halaman nggak pernah kosong.
+
+### Catatan
+
+Foto lama nggak ikut dihapus dari Cloudinary waktu diganti — biar salah upload
+nggak berarti kehilangan aset. Bersihkan manual dari Media Library kalau perlu.

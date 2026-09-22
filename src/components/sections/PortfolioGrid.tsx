@@ -2,49 +2,58 @@
 
 import { useState, useEffect } from "react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
-import { portfolioItems, filterCategories } from "@/data/portfolio";
+import { cloudinaryImage } from "@/lib/cloudinary";
+import type { PortfolioItem } from "@/lib/portfolio";
+import { CATEGORY_LABELS, GRID_SPEC } from "@/lib/site-slots";
 
 interface PortfolioGridProps {
-  onQuickView: (item: typeof portfolioItems[0]) => void;
+  items: PortfolioItem[];
+  onQuickView: (item: PortfolioItem) => void;
 }
 
-export function PortfolioGrid({ onQuickView }: PortfolioGridProps) {
+/**
+ * Kategori filter diambil dari daftar tetap di lib/site-slots, jadi urutannya
+ * konsisten walaupun admin menambah/menghapus proyek.
+ */
+const FILTER_KEYS = ["all", "branding", "logo", "apparel", "social", "poster"];
+
+export function PortfolioGrid({ items, onQuickView }: PortfolioGridProps) {
   const [activeFilter, setActiveFilter] = useState("all");
-  const [filteredItems, setFilteredItems] = useState(portfolioItems);
+  const [filteredItems, setFilteredItems] = useState(items);
   const ref = useScrollReveal();
 
   useEffect(() => {
     if (activeFilter === "all") {
-      setFilteredItems(portfolioItems);
+      setFilteredItems(items);
     } else {
-      setFilteredItems(portfolioItems.filter((item) => item.category === activeFilter));
+      setFilteredItems(items.filter((item) => item.category === activeFilter));
     }
-  }, [activeFilter]);
+  }, [activeFilter, items]);
 
   return (
     <>
       <section className="mx-auto max-w-[1200px] px-6 pt-12">
         <p ref={ref} className="reveal mt-24 mb-4 font-display text-xs tracking-[0.3em] text-ink/40">SELECTED WORKS</p>
         <div className="reveal flex flex-wrap gap-2.5" id="filters">
-          {filterCategories.map((cat) => (
+          {FILTER_KEYS.map((key) => (
             <button
-              key={cat.key}
-              data-filter={cat.key}
-              onClick={() => setActiveFilter(cat.key)}
+              key={key}
+              data-filter={key}
+              onClick={() => setActiveFilter(key)}
               className={`filter-btn rounded-full px-5 py-2.5 text-[13px] font-medium transition-colors ${
-                activeFilter === cat.key
+                activeFilter === key
                   ? "bg-coral text-white"
                   : "border border-ink/12 bg-chalk hover:border-coral hover:text-coral"
               }`}
             >
-              {cat.label}
+              {CATEGORY_LABELS[key] ?? key}
             </button>
           ))}
         </div>
       </section>
 
       <section className="mx-auto max-w-[1200px] px-6 py-12">
-        <div id="grid" className="masonry columns-1 sm:columns-2 lg:columns-3">
+        <div id="grid" className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {filteredItems.map((item) => (
             <PortfolioCard key={item.id} item={item} onQuickView={onQuickView} />
           ))}
@@ -58,11 +67,9 @@ function PortfolioCard({
   item,
   onQuickView,
 }: {
-  item: typeof portfolioItems[0];
-  onQuickView: (item: typeof portfolioItems[0]) => void;
+  item: PortfolioItem;
+  onQuickView: (item: PortfolioItem) => void;
 }) {
-  const revealRef = useScrollReveal();
-
   const categoryColors: Record<string, string> = {
     apparel: "#FF5A45",
     poster: "#E8A33D",
@@ -97,10 +104,17 @@ function PortfolioCard({
         if (e.key === "Enter") onQuickView(item);
       }}
     >
-      <div className="h-[420px] w-full overflow-hidden">
+      {/*
+        Rasio 4:5 dikunci di sini. Semua foto di-upload lewat /admin
+        sudah dinormalkan ke kanvas 1200x1500, jadi bentuk kartu selalu
+        sama di breakpoint mana pun dan foto nggak terpotong.
+      */}
+      <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#F7F1E7]">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={item.image}
+          src={cloudinaryImage(item.image, GRID_SPEC.width, GRID_SPEC.height)}
           alt={item.title}
+          loading="lazy"
           className="h-full w-full object-cover transition-transform duration-[1100ms] ease-out group-hover:scale-[1.07]"
         />
       </div>

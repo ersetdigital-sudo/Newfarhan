@@ -2,8 +2,16 @@
 
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { useCounter } from "@/hooks/useCounter";
+import { cloudinaryImage } from "@/lib/cloudinary";
+import { slotCanvas } from "@/lib/site-slots";
 
-export function About() {
+interface AboutProps {
+  /** Foto profil dari slot "profile". Kalau kosong, pakai gambar lama. */
+  profileUrl?: string;
+  profileAlt?: string;
+}
+
+export function About({ profileUrl, profileAlt }: AboutProps) {
   const ref = useScrollReveal();
   const counter98 = useCounter(98);
 
@@ -24,9 +32,14 @@ export function About() {
         <div className="reveal rounded-[2rem] border border-ink/8 bg-chalk p-8 md:col-span-2 md:p-10">
           <div className="flex items-center gap-5">
             <span className="relative grid h-24 w-24 shrink-0 place-items-center rounded-full p-[2px]" style={{ background: "linear-gradient(135deg,#FF5A45,#E8A33D)" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/images/c98c49c7-b8f7-4763-ba04-805ebfb930e0.png"
-                alt="Farhan Raka.K"
+                src={cloudinaryImage(
+                  profileUrl || "/images/c98c49c7-b8f7-4763-ba04-805ebfb930e0.png",
+                  slotCanvas("profile").width,
+                  slotCanvas("profile").height
+                )}
+                alt={profileAlt || "Farhan Raka.K"}
                 className="h-full w-full rounded-full object-cover"
               />
             </span>
