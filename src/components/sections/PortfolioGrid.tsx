@@ -105,9 +105,10 @@ function PortfolioCard({
       }}
     >
       {/*
-        Rasio 4:5 dikunci di sini. Semua foto di-upload lewat /admin
-        sudah dinormalkan ke kanvas 1200x1500, jadi bentuk kartu selalu
-        sama di breakpoint mana pun dan foto nggak terpotong.
+        Rasio 4:5 dikunci di sini. Foto yang di-upload lewat /admin sudah
+        dipadu Cloudinary ke kanvas 1200x1500, dan object-contain bikin foto
+        lama (yang belum lewat Cloudinary) juga tampil utuh — jadi nggak ada
+        bagian yang terpotong, dari sumber mana pun.
       */}
       <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#F7F1E7]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -115,7 +116,7 @@ function PortfolioCard({
           src={cloudinaryImage(item.image, GRID_SPEC.width, GRID_SPEC.height)}
           alt={item.title}
           loading="lazy"
-          className="h-full w-full object-cover transition-transform duration-[1100ms] ease-out group-hover:scale-[1.07]"
+          className="h-full w-full object-contain transition-transform duration-[1100ms] ease-out group-hover:scale-[1.07]"
         />
       </div>
       <div

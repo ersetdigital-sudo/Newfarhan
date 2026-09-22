@@ -71,7 +71,7 @@ export function Gallery({ slots }: GalleryProps) {
                   src={img.src}
                   alt={img.alt}
                   loading="lazy"
-                  className="h-full w-full object-cover transition-transform duration-[1100ms] hover:scale-[1.05]"
+                  className="h-full w-full object-contain transition-transform duration-[1100ms] hover:scale-[1.05]"
                   onClick={() => {
                     setLightboxSrc(img.src);
                     setLightboxOpen(true);

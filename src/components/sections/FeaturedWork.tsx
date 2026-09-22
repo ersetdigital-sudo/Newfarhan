@@ -67,7 +67,9 @@ export function FeaturedWork({ slots }: FeaturedWorkProps) {
           </div>
         </a>
 
-        {/* Kartu kecil — rasio dikunci 2:1, sama persis dengan kanvas upload */}
+        {/* Kartu kecil — rasio dikunci 2:1, sama persis dengan kanvas upload.
+            object-contain bikin foto yang belum lewat Cloudinary pun tampil
+            utuh, bukan dipotong jadi strip tipis. */}
         {SECONDARY_SLOTS.map((slot) => {
           const spec = slotSpec(slot);
           const image = slots[slot];
@@ -87,7 +89,7 @@ export function FeaturedWork({ slots }: FeaturedWorkProps) {
                   src={src}
                   alt={image?.alt || label}
                   loading="lazy"
-                  className="h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-[1.05]"
+                  className="h-full w-full object-contain transition-transform duration-[1200ms] group-hover:scale-[1.05]"
                 />
               </div>
               <div className="shine absolute inset-0" style={{ background: "linear-gradient(to top, rgba(20,19,26,.95) 0%, rgba(20,19,26,.5) 42%, rgba(20,19,26,0) 78%)" }} />

@@ -62,9 +62,9 @@ export function QuickViewModal({
           </svg>
         </button>
         <div className="grid max-h-[90vh] overflow-y-auto md:grid-cols-[1.15fr,1fr] md:overflow-hidden">
-          <div className="h-[240px] bg-chalk md:h-[460px]">
+          <div className="h-[240px] bg-[#F7F1E7] md:h-[460px]">
             {image ? (
-              <img id="qv-img" src={image} alt={title} className="h-full w-full object-cover" />
+              <img id="qv-img" src={image} alt={title} className="h-full w-full object-contain" />
             ) : null}
           </div>
           <div className="flex flex-col justify-center gap-4 p-7 md:p-10">

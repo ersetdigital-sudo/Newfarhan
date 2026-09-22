@@ -72,6 +72,12 @@ otomatis mengirim WebP/AVIF.
 
 Contoh nyata: PNG 1536×1024 (2,1 MB) → terkirim 1200×1500 WebP (70 KB).
 
+Foto lama yang masih ada di `public/images/` nggak dilewatkan Cloudinary, jadi
+nggak punya kanvas terpadu. Karena itu semua gambar slot memakai
+`object-contain`: foto yang sudah dipadu tampil pas memenuhi kotak, sedangkan
+foto lama ditampilkan utuh dengan latar krem. Hasilnya nggak ada foto yang
+terpotong, apa pun sumbernya.
+
 ### Environment variables
 
 ```bash
