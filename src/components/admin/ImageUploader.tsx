@@ -79,8 +79,10 @@ export function ImageUploader({
         style={{ aspectRatio: aspect.replace(":", " / ") }}
       >
         {currentUrl ? (
+          // object-contain disamakan dengan yang dipakai situs, supaya yang
+          // kelihatan di admin persis sama dengan yang tampil di halaman.
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={currentUrl} alt="" className="h-full w-full object-cover" />
+          <img src={currentUrl} alt="" className="h-full w-full object-contain" />
         ) : (
           <div className="grid h-full place-items-center text-xs text-ink/40">Belum ada foto</div>
         )}
