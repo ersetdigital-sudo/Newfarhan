@@ -140,11 +140,36 @@ html.js-on .reveal {
   font-variant-numeric: tabular-nums;
 }
 
-/* ─── Custom Cursor (hide on touch devices) ─── */
+/* ─── Custom Cursor ───
+   Kursor asli cuma disembunyikan kalau komponen CustomCursor benar-benar
+   dirender — ditandai class .cursor-custom di <html>. Halaman yang nggak
+   merender komponen itu (mis. /admin dan /admin/login) tetap pakai kursor
+   normal, jadi nggak ada lagi kursor yang ilang. */
 @media (hover: hover) and (pointer: fine) {
-  * {
+  html.cursor-custom,
+  html.cursor-custom * {
     cursor: none !important;
   }
+}
+
+/* ─── Interactive Elements ───
+   Tailwind v4 bikin <button> pakai cursor default. Balikin ke pointer biar
+   terasa responsif, terutama di panel /admin. Text input sengaja dibiarkan
+   pakai I-beam bawaan. */
+button:not(:disabled),
+[role="button"],
+select,
+label[for],
+input[type="checkbox"],
+input[type="file"],
+a[href] {
+  cursor: pointer;
+}
+
+button:disabled,
+input:disabled,
+select:disabled {
+  cursor: not-allowed;
 }
 
 /* ─── Snake Cursor Trail ─── */
