@@ -154,7 +154,11 @@ export function HomeView({ items, slots, settings }: HomeViewProps) {
         <PortfolioGrid items={items} onQuickView={handleQuickView} />
         <Process />
         <Testimonials />
-        <About profileUrl={slots.profile?.image_url} profileAlt={slots.profile?.alt} />
+        <About
+          profileUrl={slots.profile?.image_url}
+          profileAlt={slots.profile?.alt}
+          settings={settings}
+        />
         <ContactFooter settings={settings} />
       </main>
 

@@ -12,6 +12,18 @@
  * situs nggak pernah nampilin teks kosong.
  */
 export const SETTING_DEFAULTS: Record<string, string> = {
+  about_kicker: "ABOUT",
+  about_heading: "Halo, saya Farhan.",
+  about_role: "Creative Designer · Indonesia",
+  about_bio:
+    "Enam tahun mengerjakan identitas visual untuk brand kecil hingga menengah: branding, logo, jersey & apparel, serta kebutuhan konten digital. Tiga hal yang selalu saya pegang: clarity, character, consistency.",
+  about_skills: "Adobe Illustrator\nAdobe Photoshop\nInDesign\nFigma\nCanva\nCorelDRAW",
+  about_stat_value: "98",
+  about_stat_suffix: "%",
+  about_stat_label: "Klien kembali untuk project berikutnya.",
+  about_principles_title: "Principles",
+  about_principles:
+    "Clarity — pesan terbaca lebih dulu\nCharacter — punya ciri, bukan template\nConsistency — konsisten di semua media",
   contact_kicker: "CONTACT",
   contact_heading_1: "Mari kerjakan",
   contact_heading_2: "project Anda.",
@@ -33,7 +45,9 @@ export interface SettingField {
   /** Keterangan kecil di bawah input. */
   hint?: string;
   multiline?: boolean;
-  type?: "text" | "email" | "url";
+  type?: "text" | "email" | "url" | "number";
+  /** Field ini isinya daftar (satu item per baris / dipisah koma). */
+  list?: boolean;
 }
 
 export interface SettingGroup {
@@ -45,6 +59,51 @@ export interface SettingGroup {
 }
 
 export const SETTING_GROUPS: SettingGroup[] = [
+  {
+    title: "Section About",
+    where: "Homepage · kartu profil, keahlian, dan statistik di kanan",
+    path: "/#about",
+    fields: [
+      { key: "about_kicker", label: "Label kecil di atas section", hint: 'Biasanya ditulis "ABOUT".' },
+      { key: "about_heading", label: "Sapaan besar" },
+      { key: "about_role", label: "Jabatan / lokasi", hint: "Baris kecil berwarna coral di bawah sapaan." },
+      { key: "about_bio", label: "Paragraf perkenalan", multiline: true },
+      {
+        key: "about_skills",
+        label: "Keahlian",
+        multiline: true,
+        list: true,
+        hint: "Satu keahlian per baris. Kalau ditulis dalam satu baris saja, pisahkan dengan koma.",
+      },
+      {
+        key: "about_stat_value",
+        label: "Angka statistik",
+        type: "number",
+        hint: "Ditampilkan sebagai angka yang menghitung naik saat di-scroll.",
+      },
+      {
+        key: "about_stat_suffix",
+        label: "Akhiran angka",
+        hint: 'Tanda setelah angka — mis. "%" atau " tahun". Dikosongkan akan kembali ke "%".',
+      },
+      { key: "about_stat_label", label: "Keterangan statistik" },
+    ],
+  },
+  {
+    title: "Principles",
+    where: "Homepage · kartu di kanan bawah section About",
+    path: "/#about",
+    fields: [
+      { key: "about_principles_title", label: "Judul kartu", hint: 'Biasanya ditulis "Principles".' },
+      {
+        key: "about_principles",
+        label: "Daftar prinsip",
+        multiline: true,
+        list: true,
+        hint: "Satu prinsip per baris — koma di dalam kalimat aman. Titik warnanya bergilir coral → mustard → indigo, dan jumlah barisnya bebas.",
+      },
+    ],
+  },
   {
     title: "Section Kontak",
     where: "Homepage · paling bawah, sebelum baris copyright",
@@ -115,6 +174,34 @@ export const SETTING_KEYS: string[] = SETTING_GROUPS.flatMap((group) =>
 export function settingValue(settings: SettingsMap | undefined, key: string): string {
   const value = settings?.[key]?.trim();
   return value || SETTING_DEFAULTS[key] || "";
+}
+
+/**
+ * Pecah field bertipe daftar jadi array.
+ *
+ * Aturannya: kalau isinya lebih dari satu baris, TIAP BARIS jadi satu item —
+ * koma di tengah kalimat dibiarkan apa adanya ("Character — punya ciri, bukan
+ * template" tetap satu prinsip, bukan dua). Baru kalau semuanya ditulis dalam
+ * satu baris, koma dipakai sebagai pemisah, biar "Figma, Canva" tetap kebaca
+ * dua item.
+ */
+export function settingList(settings: SettingsMap | undefined, key: string): string[] {
+  const raw = settingValue(settings, key).trim();
+  if (!raw) return [];
+
+  const parts = raw.includes("\n") ? raw.split("\n") : raw.split(",");
+  return parts.map((entry) => entry.trim()).filter(Boolean);
+}
+
+/**
+ * Angka buat statistik. Dikembalikan null kalau isinya bukan angka, supaya
+ * pemanggilnya bisa jatuh ke nilai default daripada nampilin "NaN".
+ */
+export function settingNumber(settings: SettingsMap | undefined, key: string): number | null {
+  const raw = settingValue(settings, key).replace(/[^\d.]/g, "");
+  if (!raw) return null;
+  const value = Number(raw);
+  return Number.isFinite(value) ? value : null;
 }
 
 /** Semua key yang masih "#" (tautan belum diisi). */

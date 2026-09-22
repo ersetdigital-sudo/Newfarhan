@@ -13,6 +13,18 @@ const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 export const isSupabaseConfigured = Boolean(url && anonKey && serviceKey);
 
 /**
+ * Next.js menge-cache setiap `fetch` yang jalan di server, dan cache-nya
+ * ikut tersimpan di `.next/cache` — termasuk antar-deploy di Vercel.
+ *
+ * Kalau dibiarkan, data dari Supabase bisa ikut ke-“bekukan” dan situs tetap
+ * menampilkan teks lama walau database-nya sudah diganti. Karena itu semua
+ * permintaan ke Supabase dipaksa `no-store`: yang nge-cache cukup halaman
+ * (ISR + revalidatePath), bukan datanya.
+ */
+const noStore: typeof fetch = (input, init) =>
+  fetch(input, { ...init, cache: "no-store" });
+
+/**
  * Client untuk BACA data publik. Pakai anon key, jadi tetap tunduk ke RLS
  * (cuma bisa lihat item yang published = true).
  */
@@ -23,6 +35,7 @@ export function supabaseRead(): SupabaseClient {
   if (!readClient) {
     readClient = createClient(url, anonKey, {
       auth: { persistSession: false, autoRefreshToken: false },
+      global: { fetch: noStore },
     });
   }
   return readClient;
@@ -39,6 +52,7 @@ export function supabaseAdmin(): SupabaseClient {
   if (!adminClient) {
     adminClient = createClient(url, serviceKey, {
       auth: { persistSession: false, autoRefreshToken: false },
+      global: { fetch: noStore },
     });
   }
   return adminClient;

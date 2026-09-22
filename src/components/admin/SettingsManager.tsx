@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { SETTING_GROUPS, type SettingsMap } from "@/lib/site-settings";
+import { SETTING_GROUPS, settingList, type SettingsMap } from "@/lib/site-settings";
 
 interface SettingsManagerProps {
   settings: SettingsMap;
@@ -98,19 +98,27 @@ export function SettingsManager({ settings }: SettingsManagerProps) {
 
                 {field.multiline ? (
                   <textarea
-                    rows={3}
+                    rows={field.list ? 6 : 3}
                     value={draft[field.key] ?? ""}
                     onChange={(event) => update(field.key, event.target.value)}
                     className="mt-2 w-full resize-y rounded-xl border border-ink/12 bg-paper px-4 py-3 text-sm leading-relaxed outline-none transition-colors focus:border-coral"
                   />
                 ) : (
                   <input
-                    type={field.type === "email" ? "email" : "text"}
+                    type={
+                      field.type === "email" ? "email" : field.type === "number" ? "number" : "text"
+                    }
                     value={draft[field.key] ?? ""}
                     onChange={(event) => update(field.key, event.target.value)}
                     className="mt-2 w-full rounded-xl border border-ink/12 bg-paper px-4 py-3 text-sm outline-none transition-colors focus:border-coral"
                   />
                 )}
+
+                {field.list ? (
+                  <span className="mt-1.5 block text-[11px] text-ink/40">
+                    Terbaca {settingList(draft, field.key).length} item
+                  </span>
+                ) : null}
               </label>
             ))}
           </div>

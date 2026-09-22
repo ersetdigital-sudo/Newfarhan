@@ -25,6 +25,16 @@ grant select on public.site_settings to anon, authenticated;
 -- Nilai awal = teks yang sekarang masih hardcode di ContactFooter
 -- ------------------------------------------------------------
 insert into public.site_settings (key, value) values
+  ('about_kicker',         'ABOUT'),
+  ('about_heading',        'Halo, saya Farhan.'),
+  ('about_role',           'Creative Designer · Indonesia'),
+  ('about_bio',            'Enam tahun mengerjakan identitas visual untuk brand kecil hingga menengah: branding, logo, jersey & apparel, serta kebutuhan konten digital. Tiga hal yang selalu saya pegang: clarity, character, consistency.'),
+  ('about_skills',         E'Adobe Illustrator\nAdobe Photoshop\nInDesign\nFigma\nCanva\nCorelDRAW'),
+  ('about_stat_value',     '98'),
+  ('about_stat_suffix',    '%'),
+  ('about_stat_label',     'Klien kembali untuk project berikutnya.'),
+  ('about_principles_title','Principles'),
+  ('about_principles',     E'Clarity — pesan terbaca lebih dulu\nCharacter — punya ciri, bukan template\nConsistency — konsisten di semua media'),
   ('contact_kicker',       'CONTACT'),
   ('contact_heading_1',    'Mari kerjakan'),
   ('contact_heading_2',    'project Anda.'),
