@@ -4,38 +4,41 @@ import { useState } from "react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { cloudinaryImage } from "@/lib/cloudinary";
 import type { PortfolioItem } from "@/lib/portfolio";
-import { CATEGORY_KEYS, CATEGORY_LABELS, GRID_SPEC } from "@/lib/site-slots";
+import { categoryLabel, type Category } from "@/lib/categories";
+import { GRID_SPEC } from "@/lib/site-slots";
 
 interface PortfolioGridProps {
   items: PortfolioItem[];
+  categories: Category[];
   onQuickView: (item: PortfolioItem) => void;
 }
 
-export function PortfolioGrid({ items, onQuickView }: PortfolioGridProps) {
+export function PortfolioGrid({ items, categories, onQuickView }: PortfolioGridProps) {
   const [activeFilter, setActiveFilter] = useState("all");
   const ref = useScrollReveal();
 
   /**
    * Tab filter cuma muncul untuk kategori yang benar-benar ada isinya.
    *
-   * Sebelumnya daftarnya dipatok di kode, jadi kategori yang proyeknya sudah
-   * dihapus/di-hide tetap nampil — dan diklik hasilnya grid kosong tanpa
-   * keterangan apa pun. Sekarang kategori baru otomatis muncul begitu ada
-   * proyek pertamanya, dan hilang sendiri kalau isinya habis. Urutannya tetap
-   * konsisten karena diambil dari CATEGORY_KEYS, bukan urutan item.
+   * Urutannya ngikut daftar kategori di database (diatur dari panel admin),
+   * bukan urutan proyeknya — jadi tab nggak ikut lompat-lompat waktu urutan
+   * grid diubah. Kategori yang belum punya proyek nggak nampil, dan kalau
+   * isinya habis tabnya hilang sendiri.
    */
-  const availableCategories: string[] = CATEGORY_KEYS.filter((key) =>
-    items.some((item) => item.category === key)
-  );
+  const usedKeys = Array.from(new Set(items.map((item) => item.category)));
+  const orderedKeys = [
+    ...categories.filter((category) => usedKeys.includes(category.key)).map((c) => c.key),
+    // Proyek yang kategori key-nya nggak ada di daftar tetap dapat tab sendiri,
+    // biar nggak ada proyek yang "nggak kelihatan" di tab mana pun.
+    ...usedKeys.filter((key) => !categories.some((category) => category.key === key)),
+  ];
 
   // Kalaupun filter yang aktif sudah nggak punya isi (mis. proyek terakhirnya
   // baru dihapus), halaman balik ke "All" daripada nampil grid kosong.
   const activeFilterKey =
-    activeFilter === "all" || availableCategories.includes(activeFilter)
-      ? activeFilter
-      : "all";
+    activeFilter === "all" || orderedKeys.includes(activeFilter) ? activeFilter : "all";
 
-  const filters = availableCategories.length > 1 ? ["all", ...availableCategories] : [];
+  const filters = orderedKeys.length > 1 ? ["all", ...orderedKeys] : [];
 
   // Diturunkan langsung dari props, bukan disimpan di state — biar nggak ada
   // render berantai waktu filter atau daftar item berubah.
@@ -62,7 +65,7 @@ export function PortfolioGrid({ items, onQuickView }: PortfolioGridProps) {
                     : "border border-ink/12 bg-chalk hover:border-coral hover:text-coral"
                 }`}
               >
-                {CATEGORY_LABELS[key] ?? key}
+                {categoryLabel(categories, key)}
               </button>
             ))}
           </div>

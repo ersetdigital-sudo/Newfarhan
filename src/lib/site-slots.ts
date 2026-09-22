@@ -172,16 +172,9 @@ export const GRID_SPEC = {
 /** Urutan halaman di panel admin. */
 export const SLOT_PAGES = ["Homepage", "Halaman Project"];
 
-export const CATEGORY_LABELS: Record<string, string> = {
-  all: "All",
-  branding: "Branding",
-  logo: "Logo Design",
-  apparel: "Jersey & Apparel",
-  social: "Social Media",
-  poster: "Banner & Poster",
-};
-
-export const CATEGORY_KEYS = ["branding", "logo", "apparel", "social", "poster"] as const;
+// Kategori portofolio TIDAK lagi tinggal di sini. Sekarang diatur dari panel
+// admin dan disimpan di tabel `categories` — lihat src/lib/categories.ts
+// (tipe + bawaan) dan src/lib/categories.server.ts (baca/tulis database).
 
 export function slotSpec(slot: string): SlotSpec | undefined {
   return SITE_SLOTS.find((s) => s.slot === slot);

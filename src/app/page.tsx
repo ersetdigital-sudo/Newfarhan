@@ -1,6 +1,7 @@
 import { HomeView } from "@/components/HomeView";
 import { getPortfolioItems, getSiteImages } from "@/lib/portfolio";
 import { getSiteSettings } from "@/lib/site-settings.server";
+import { getCategories } from "@/lib/categories.server";
 
 // ISR: halaman di-cache, tapi langsung di-refresh saat admin menyimpan
 // perubahan lewat revalidatePath(). Jaring pengaman kalau ada perubahan
@@ -8,11 +9,14 @@ import { getSiteSettings } from "@/lib/site-settings.server";
 export const revalidate = 300;
 
 export default async function Home() {
-  const [items, slots, settings] = await Promise.all([
+  const [items, slots, settings, categories] = await Promise.all([
     getPortfolioItems(),
     getSiteImages(),
     getSiteSettings(),
+    getCategories(),
   ]);
 
-  return <HomeView items={items} slots={slots} settings={settings} />;
+  return (
+    <HomeView items={items} slots={slots} settings={settings} categories={categories} />
+  );
 }

@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { guardAdminApi } from "@/lib/admin-auth";
-import { CATEGORY_KEYS, GRID_SPEC } from "@/lib/site-slots";
+import { validCategoryKeys } from "@/lib/categories.server";
+import { GRID_SPEC } from "@/lib/site-slots";
 import { supabaseAdmin } from "@/lib/supabase";
 
 export const runtime = "nodejs";
@@ -18,8 +19,9 @@ function slugify(value: string): string {
   return slug || "proyek";
 }
 
-function isCategory(value: unknown): value is string {
-  return typeof value === "string" && (CATEGORY_KEYS as readonly string[]).includes(value);
+/** Cek kategori ke daftar di database, bukan daftar yang dipatok di kode. */
+function isCategory(value: unknown, allowed: string[]): value is string {
+  return typeof value === "string" && allowed.includes(value);
 }
 
 export async function POST(request: Request) {
@@ -34,7 +36,7 @@ export async function POST(request: Request) {
 
   if (!title) return NextResponse.json({ error: "Judul wajib diisi." }, { status: 400 });
   if (!imageUrl) return NextResponse.json({ error: "Foto wajib di-upload dulu." }, { status: 400 });
-  if (!isCategory(body.category)) {
+  if (!isCategory(body.category, await validCategoryKeys())) {
     return NextResponse.json({ error: "Kategori nggak valid." }, { status: 400 });
   }
 

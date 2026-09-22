@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { guardAdminApi } from "@/lib/admin-auth";
-import { CATEGORY_KEYS } from "@/lib/site-slots";
+import { validCategoryKeys } from "@/lib/categories.server";
 import { supabaseAdmin } from "@/lib/supabase";
 
 export const runtime = "nodejs";
@@ -30,7 +30,9 @@ export async function PATCH(request: Request, { params }: Params) {
   }
 
   if (typeof body.category === "string") {
-    if (!(CATEGORY_KEYS as readonly string[]).includes(body.category)) {
+    // Validasi dari daftar kategori di database, bukan daftar di kode —
+    // supaya kategori yang baru ditambah lewat admin langsung bisa dipakai.
+    if (!(await validCategoryKeys()).includes(body.category)) {
       return NextResponse.json({ error: "Kategori nggak valid." }, { status: 400 });
     }
     update.category = body.category;

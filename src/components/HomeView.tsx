@@ -15,15 +15,17 @@ import { ContactFooter } from "@/components/sections/ContactFooter";
 import { cloudinaryImage } from "@/lib/cloudinary";
 import type { PortfolioItem, SiteImage } from "@/lib/portfolio";
 import type { SettingsMap } from "@/lib/site-settings";
+import type { Category } from "@/lib/categories";
 import { GRID_SPEC } from "@/lib/site-slots";
 
 interface HomeViewProps {
   items: PortfolioItem[];
   slots: Record<string, SiteImage>;
   settings: SettingsMap;
+  categories: Category[];
 }
 
-export function HomeView({ items, slots, settings }: HomeViewProps) {
+export function HomeView({ items, slots, settings, categories }: HomeViewProps) {
   const [quickViewOpen, setQuickViewOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<PortfolioItem | null>(null);
 
@@ -151,7 +153,7 @@ export function HomeView({ items, slots, settings }: HomeViewProps) {
         <Hero />
         <Services />
         <FeaturedWork slots={slots} />
-        <PortfolioGrid items={items} onQuickView={handleQuickView} />
+        <PortfolioGrid items={items} categories={categories} onQuickView={handleQuickView} />
         <Process />
         <Testimonials />
         <About

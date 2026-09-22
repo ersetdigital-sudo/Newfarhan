@@ -3,14 +3,16 @@
 import { useState, type FormEvent, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import type { AdminPortfolioItem } from "@/lib/portfolio";
-import { CATEGORY_KEYS, CATEGORY_LABELS, GRID_SPEC } from "@/lib/site-slots";
+import type { Category } from "@/lib/categories";
+import { GRID_SPEC } from "@/lib/site-slots";
 import { ImageUploader } from "./ImageUploader";
 
 interface ManagerProps {
   items: AdminPortfolioItem[];
+  categories: Category[];
 }
 
-export function PortfolioItemsManager({ items }: ManagerProps) {
+export function PortfolioItemsManager({ items, categories }: ManagerProps) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
@@ -67,13 +69,14 @@ export function PortfolioItemsManager({ items }: ManagerProps) {
         </p>
       ) : null}
 
-      <NewItemForm onCreated={() => router.refresh()} />
+      <NewItemForm categories={categories} onCreated={() => router.refresh()} />
 
       <div className="space-y-4">
         {items.map((item, index) => (
           <ItemCard
             key={item.slug}
             item={item}
+            categories={categories}
             index={index}
             total={items.length}
             onMove={move}
@@ -87,10 +90,16 @@ export function PortfolioItemsManager({ items }: ManagerProps) {
   );
 }
 
-function NewItemForm({ onCreated }: { onCreated: () => void }) {
+function NewItemForm({
+  categories,
+  onCreated,
+}: {
+  categories: Category[];
+  onCreated: () => void;
+}) {
   const [imageUrl, setImageUrl] = useState("");
   const [title, setTitle] = useState("");
-  const [category, setCategory] = useState<string>("branding");
+  const [category, setCategory] = useState<string>(categories[0]?.key ?? "");
   const [subtitle, setSubtitle] = useState("");
   const [description, setDescription] = useState("");
   const [busy, setBusy] = useState(false);
@@ -174,9 +183,9 @@ function NewItemForm({ onCreated }: { onCreated: () => void }) {
                 onChange={(event) => setCategory(event.target.value)}
                 className="input"
               >
-                {CATEGORY_KEYS.map((key) => (
-                  <option key={key} value={key}>
-                    {CATEGORY_LABELS[key]}
+                {categories.map((entry) => (
+                  <option key={entry.key} value={entry.key}>
+                    {entry.label}
                   </option>
                 ))}
               </select>
@@ -225,6 +234,7 @@ function NewItemForm({ onCreated }: { onCreated: () => void }) {
 
 function ItemCard({
   item,
+  categories,
   index,
   total,
   onMove,
@@ -233,6 +243,7 @@ function ItemCard({
   onError,
 }: {
   item: AdminPortfolioItem;
+  categories: Category[];
   index: number;
   total: number;
   onMove: (index: number, direction: -1 | 1) => void;
@@ -359,9 +370,9 @@ function ItemCard({
                 }
                 className="input"
               >
-                {CATEGORY_KEYS.map((key) => (
-                  <option key={key} value={key}>
-                    {CATEGORY_LABELS[key]}
+                {categories.map((entry) => (
+                  <option key={entry.key} value={entry.key}>
+                    {entry.label}
                   </option>
                 ))}
               </select>

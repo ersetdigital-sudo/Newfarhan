@@ -13,8 +13,10 @@ create table if not exists public.portfolio_items (
   id          uuid primary key default gen_random_uuid(),
   slug        text not null unique,
   title       text not null,
-  category    text not null
-              check (category in ('branding', 'logo', 'apparel', 'social', 'poster')),
+  -- Kategori sengaja TANPA check constraint: daftarnya sekarang diatur dari
+  -- panel admin dan dijaga lewat FOREIGN KEY ke tabel `categories`
+  -- (lihat categories.sql).
+  category    text not null,
   subtitle    text not null default '',   -- label kecil di kartu, mis. "Jersey & Apparel"
   description text not null default '',   -- isi popup quick view
   image_url   text not null,              -- "/images/x.png" atau URL Storage
