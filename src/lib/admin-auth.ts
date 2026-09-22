@@ -17,11 +17,17 @@ function safeEqual(a: string, b: string): boolean {
   return timingSafeEqual(bufA, bufB);
 }
 
-/** Cek password admin yang diketik di form login. */
+/**
+ * Cek password admin yang diketik di form login.
+ *
+ * Spasi/enter di ujung-ujung sengaja dibuang dulu — kalau nggak, orang yang
+ * nge-paste password dari chat/notes sering kena karakter ekstra yang nggak
+ * kelihatan dan cuma dapat "password salah".
+ */
 export function verifyPassword(input: string): boolean {
-  const expected = process.env.ADMIN_PASSWORD || "";
+  const expected = (process.env.ADMIN_PASSWORD || "").trim();
   if (!expected) return false;
-  return safeEqual(input, expected);
+  return safeEqual(input.trim(), expected);
 }
 
 /**
