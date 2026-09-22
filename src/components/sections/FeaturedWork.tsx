@@ -3,22 +3,41 @@
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { cloudinaryImage } from "@/lib/cloudinary";
 import type { SiteImage } from "@/lib/portfolio";
+import { settingValue, type SettingsMap } from "@/lib/site-settings";
 import { slotCanvas, slotSpec } from "@/lib/site-slots";
 
 interface FeaturedWorkProps {
   slots: Record<string, SiteImage>;
+  settings?: SettingsMap;
 }
 
-/** Urutan kartu kecil di sebelah kanan foto utama. */
-const SECONDARY_SLOTS = ["featured_stationery", "featured_environmental", "featured_digital"];
+/**
+ * Tiga kartu kecil di sebelah kanan foto utama.
+ *
+ * Teksnya dibaca dari `site_settings` lewat `settingValue`, jadi admin bisa
+ * menggantinya tanpa menyentuh kode — kalau fieldnya dikosongkan, otomatis
+ * balik ke teks bawaan. Pemetaannya per-POSISI (kartu 1/2/3), bukan per-label,
+ * supaya mengganti nama label nggak diam-diam ngubah urutan teks.
+ */
+const SECONDARY_CARDS = [
+  {
+    slot: "featured_stationery",
+    badgeKey: "featured_card1_badge",
+    titleKey: "featured_card1_title",
+  },
+  {
+    slot: "featured_environmental",
+    badgeKey: "featured_card2_badge",
+    titleKey: "featured_card2_title",
+  },
+  {
+    slot: "featured_digital",
+    badgeKey: "featured_card3_badge",
+    titleKey: "featured_card3_title",
+  },
+];
 
-const SECONDARY_TITLES: Record<string, string> = {
-  Stationery: "Business Card, Letterhead & Tag",
-  Environmental: "Blade Signage & Facade",
-  Digital: "Social Feed System",
-};
-
-export function FeaturedWork({ slots }: FeaturedWorkProps) {
+export function FeaturedWork({ slots, settings }: FeaturedWorkProps) {
   const ref = useScrollReveal();
 
   const main = slots.featured_main;
@@ -29,15 +48,36 @@ export function FeaturedWork({ slots }: FeaturedWorkProps) {
     mainCanvas.height
   );
 
+  // Teks bisa diganti dari admin. Semua elemen teks di kartu diposisikan
+  // absolut di dalam kotak yang ukurannya udah dikunci, jadi panjang-pendeknya
+  // nggak bisa menggeser layout. Line-clamp cuma jaring pengaman terakhir biar
+  // teks panjang nggak meluber keluar kartu di layar kecil.
+  const kicker = settingValue(settings, "featured_kicker");
+  const title1 = settingValue(settings, "featured_title_1");
+  const title2 = settingValue(settings, "featured_title_2");
+  const intro = settingValue(settings, "featured_intro");
+
+  const mainBadge = settingValue(settings, "featured_main_badge");
+  const mainTitle = settingValue(settings, "featured_main_title");
+  const mainDesc = settingValue(settings, "featured_main_desc");
+
   return (
     <section id="portfolio" className="mx-auto max-w-[1200px] px-6 pt-24">
-      <p ref={ref} className="reveal mb-4 font-display text-xs tracking-[0.3em] text-ink/40">FEATURED WORK</p>
+      <p ref={ref} className="reveal mb-4 font-display text-xs tracking-[0.3em] text-ink/40">
+        {kicker}
+      </p>
       <div className="reveal flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-        <h2 className="font-display text-4xl font-bold tracking-[-0.03em] md:text-6xl">
-          ARVA <span className="grad-text">Identity</span>
+        <h2 className="min-w-0 font-display text-4xl font-bold tracking-[-0.03em] md:max-w-[720px] md:text-6xl">
+          {title1}
+          {title2 ? (
+            <>
+              {" "}
+              <span className="grad-text">{title2}</span>
+            </>
+          ) : null}
         </h2>
-        <p className="max-w-sm text-sm leading-relaxed text-ink/60">
-          Brand identity lengkap untuk studio kreatif ARVA: logo suite, palet warna, tipografi, stationery, signage, dan aset digital.
+        <p className="max-w-sm shrink-0 whitespace-pre-line text-sm leading-relaxed text-ink/60">
+          {intro}
         </p>
       </div>
 
@@ -55,14 +95,17 @@ export function FeaturedWork({ slots }: FeaturedWorkProps) {
           </div>
           <div className="shine absolute inset-0" style={{ background: "linear-gradient(to top, rgba(20,19,26,.95) 0%, rgba(20,19,26,.55) 32%, rgba(20,19,26,0) 62%)" }} />
           <div className="absolute inset-x-0 bottom-0 p-7 md:p-9">
-            <span className="inline-flex rounded-full bg-coral px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-white">
-              Featured · Branding
+            <span className="inline-flex max-w-[85%] truncate rounded-full bg-coral px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-white">
+              {mainBadge}
             </span>
-            <h3 className="mt-5 font-display text-2xl font-bold leading-tight text-white md:text-4xl">
-              ARVA —<br />Brand Identity System
+            <h3
+              title={mainTitle}
+              className="mt-5 line-clamp-3 font-display text-2xl font-bold leading-tight text-white md:text-4xl"
+            >
+              {mainTitle}
             </h3>
-            <p className="mt-3 max-w-sm text-sm text-white/70">
-              Logo suite, palet warna, tipografi, dan guideline dalam satu papan identitas.
+            <p title={mainDesc} className="mt-3 line-clamp-2 max-w-sm text-sm text-white/70">
+              {mainDesc}
             </p>
           </div>
         </a>
@@ -70,10 +113,11 @@ export function FeaturedWork({ slots }: FeaturedWorkProps) {
         {/* Kartu kecil — rasio dikunci 2:1, sama persis dengan kanvas upload.
             object-contain bikin foto yang belum lewat Cloudinary pun tampil
             utuh, bukan dipotong jadi strip tipis. */}
-        {SECONDARY_SLOTS.map((slot) => {
+        {SECONDARY_CARDS.map(({ slot, badgeKey, titleKey }) => {
           const spec = slotSpec(slot);
           const image = slots[slot];
-          const label = image?.label || spec?.label || "";
+          const label = settingValue(settings, badgeKey) || spec?.label || "";
+          const title = settingValue(settings, titleKey) || label;
           const canvas = slotCanvas(slot);
           const src = cloudinaryImage(
             image?.image_url || spec?.fallback || "",
@@ -94,11 +138,14 @@ export function FeaturedWork({ slots }: FeaturedWorkProps) {
               </div>
               <div className="shine absolute inset-0" style={{ background: "linear-gradient(to top, rgba(20,19,26,.95) 0%, rgba(20,19,26,.5) 42%, rgba(20,19,26,0) 78%)" }} />
               <div className="absolute inset-x-0 bottom-0 p-5">
-                <span className="inline-flex rounded-full bg-mustard/95 text-ink px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.16em]">
+                <span className="inline-flex max-w-[85%] truncate rounded-full bg-mustard/95 text-ink px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.16em]">
                   {label}
                 </span>
-                <h3 className="mt-2.5 font-display text-lg font-bold leading-tight text-white">
-                  {SECONDARY_TITLES[label] ?? label}
+                <h3
+                  title={title}
+                  className="mt-2.5 line-clamp-2 font-display text-lg font-bold leading-tight text-white"
+                >
+                  {title}
                 </h3>
               </div>
             </a>

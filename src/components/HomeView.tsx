@@ -152,7 +152,7 @@ export function HomeView({ items, slots, settings, categories }: HomeViewProps) 
       <main>
         <Hero />
         <Services />
-        <FeaturedWork slots={slots} />
+        <FeaturedWork slots={slots} settings={settings} />
         <PortfolioGrid items={items} categories={categories} onQuickView={handleQuickView} />
         <Process />
         <Testimonials />

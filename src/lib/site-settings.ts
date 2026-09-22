@@ -24,6 +24,21 @@ export const SETTING_DEFAULTS: Record<string, string> = {
   about_principles_title: "Principles",
   about_principles:
     "Clarity — pesan terbaca lebih dulu\nCharacter — punya ciri, bukan template\nConsistency — konsisten di semua media",
+  featured_kicker: "FEATURED WORK",
+  featured_title_1: "ARVA",
+  featured_title_2: "Identity",
+  featured_intro:
+    "Brand identity lengkap untuk studio kreatif ARVA: logo suite, palet warna, tipografi, stationery, signage, dan aset digital.",
+  featured_main_badge: "Featured · Branding",
+  featured_main_title: "ARVA — Brand Identity System",
+  featured_main_desc:
+    "Logo suite, palet warna, tipografi, dan guideline dalam satu papan identitas.",
+  featured_card1_badge: "Stationery",
+  featured_card1_title: "Business Card, Letterhead & Tag",
+  featured_card2_badge: "Environmental",
+  featured_card2_title: "Blade Signage & Facade",
+  featured_card3_badge: "Digital",
+  featured_card3_title: "Social Feed System",
   contact_kicker: "CONTACT",
   contact_heading_1: "Mari kerjakan",
   contact_heading_2: "project Anda.",
@@ -59,6 +74,58 @@ export interface SettingGroup {
 }
 
 export const SETTING_GROUPS: SettingGroup[] = [
+  {
+    title: "Featured Work — Judul Section",
+    where: "Homepage · bagian paling atas Featured Work",
+    path: "/#portfolio",
+    fields: [
+      { key: "featured_kicker", label: "Label kecil di atas judul", hint: 'Biasanya ditulis "FEATURED WORK".' },
+      { key: "featured_title_1", label: "Judul — bagian biasa", hint: 'Contoh: "ARVA".' },
+      {
+        key: "featured_title_2",
+        label: "Judul — bagian gradien",
+        hint: 'Kata setelah judul, tampil dengan warna gradien. Kosongkan kalau nggak perlu.',
+      },
+      {
+        key: "featured_intro",
+        label: "Kalimat pengantar",
+        multiline: true,
+        hint: "Muncul di sebelah kanan judul. Boleh ditulis beberapa baris.",
+      },
+    ],
+  },
+  {
+    title: "Featured Work — Kartu Besar",
+    where: 'Homepage · kartu besar di kiri. Fotonya diganti di tab "Foto Halaman" → ARVA — kartu besar.',
+    path: "/#portfolio",
+    fields: [
+      { key: "featured_main_badge", label: "Label kecil di dalam kartu", hint: 'Contoh: "Featured · Branding".' },
+      {
+        key: "featured_main_title",
+        label: "Judul di kartu",
+        hint: "Maksimal 3 baris — lebih dari itu dipotong otomatis (teks utuhnya tetap bisa dibaca kalau kursor diarahkan ke judul).",
+      },
+      {
+        key: "featured_main_desc",
+        label: "Keterangan di bawah judul",
+        multiline: true,
+        hint: "Maksimal 2 baris biar kartunya tetap rapi.",
+      },
+    ],
+  },
+  {
+    title: "Featured Work — 3 Kartu Kecil",
+    where: 'Homepage · tiga kartu di kolom kanan, dari atas ke bawah. Fotonya di tab "Foto Halaman" → kartu kecil 1–3.',
+    path: "/#portfolio",
+    fields: [
+      { key: "featured_card1_badge", label: "Kartu 1 — label kecil" },
+      { key: "featured_card1_title", label: "Kartu 1 — judul", hint: "Maksimal 2 baris." },
+      { key: "featured_card2_badge", label: "Kartu 2 — label kecil" },
+      { key: "featured_card2_title", label: "Kartu 2 — judul", hint: "Maksimal 2 baris." },
+      { key: "featured_card3_badge", label: "Kartu 3 — label kecil" },
+      { key: "featured_card3_title", label: "Kartu 3 — judul", hint: "Maksimal 2 baris." },
+    ],
+  },
   {
     title: "Section About",
     where: "Homepage · kartu profil, keahlian, dan statistik di kanan",
