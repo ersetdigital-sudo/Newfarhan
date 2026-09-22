@@ -96,8 +96,18 @@ function NewItemForm({ onCreated }: { onCreated: () => void }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const missing = !imageUrl
+    ? "Upload fotonya dulu — kartu baru muncul di grid setelah ada gambar."
+    : !title.trim()
+      ? "Judulnya belum diisi."
+      : null;
+
   async function submit(event: FormEvent) {
     event.preventDefault();
+    if (missing) {
+      setError(missing);
+      return;
+    }
     setBusy(true);
     setError(null);
 
@@ -132,6 +142,11 @@ function NewItemForm({ onCreated }: { onCreated: () => void }) {
   return (
     <form onSubmit={submit} className="rounded-2xl border border-ink/10 bg-chalk p-5">
       <h3 className="font-display text-sm font-semibold">Tambah Proyek Baru</h3>
+      <p className="mt-1 text-[11px] leading-snug text-ink/50">
+        Proyek baru masuk ke <strong className="text-ink/70">urutan paling akhir</strong> di grid.
+        Urutannya diatur pakai tombol ↑↓ di kartu di bawah. Tab kategori di homepage ikut
+        menyesuaikan sendiri.
+      </p>
 
       <div className="mt-4 grid gap-4 md:grid-cols-[180px,1fr]">
         <ImageUploader
@@ -191,13 +206,19 @@ function NewItemForm({ onCreated }: { onCreated: () => void }) {
 
       {error ? <p className="mt-3 text-xs text-coral">{error}</p> : null}
 
-      <button
-        type="submit"
-        disabled={busy || !imageUrl || !title.trim()}
-        className="mt-4 rounded-full bg-coral px-5 py-2.5 text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-40"
-      >
-        {busy ? "Menyimpan…" : "Tambah ke grid"}
-      </button>
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        <button
+          type="submit"
+          disabled={busy || Boolean(missing)}
+          className="rounded-full bg-coral px-5 py-2.5 text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-40"
+        >
+          {busy ? "Menyimpan…" : "Tambah ke grid"}
+        </button>
+
+        {/* Tombol yang kelabu tanpa penjelasan bikin bingung — jadi alasannya
+            ditulis langsung di sebelahnya. */}
+        {missing ? <span className="text-[11px] text-ink/50">{missing}</span> : null}
+      </div>
     </form>
   );
 }

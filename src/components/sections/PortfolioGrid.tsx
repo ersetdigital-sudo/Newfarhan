@@ -4,56 +4,83 @@ import { useState } from "react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { cloudinaryImage } from "@/lib/cloudinary";
 import type { PortfolioItem } from "@/lib/portfolio";
-import { CATEGORY_LABELS, GRID_SPEC } from "@/lib/site-slots";
+import { CATEGORY_KEYS, CATEGORY_LABELS, GRID_SPEC } from "@/lib/site-slots";
 
 interface PortfolioGridProps {
   items: PortfolioItem[];
   onQuickView: (item: PortfolioItem) => void;
 }
 
-/**
- * Kategori filter diambil dari daftar tetap di lib/site-slots, jadi urutannya
- * konsisten walaupun admin menambah/menghapus proyek.
- */
-const FILTER_KEYS = ["all", "branding", "logo", "apparel", "social", "poster"];
-
 export function PortfolioGrid({ items, onQuickView }: PortfolioGridProps) {
   const [activeFilter, setActiveFilter] = useState("all");
   const ref = useScrollReveal();
 
+  /**
+   * Tab filter cuma muncul untuk kategori yang benar-benar ada isinya.
+   *
+   * Sebelumnya daftarnya dipatok di kode, jadi kategori yang proyeknya sudah
+   * dihapus/di-hide tetap nampil — dan diklik hasilnya grid kosong tanpa
+   * keterangan apa pun. Sekarang kategori baru otomatis muncul begitu ada
+   * proyek pertamanya, dan hilang sendiri kalau isinya habis. Urutannya tetap
+   * konsisten karena diambil dari CATEGORY_KEYS, bukan urutan item.
+   */
+  const availableCategories: string[] = CATEGORY_KEYS.filter((key) =>
+    items.some((item) => item.category === key)
+  );
+
+  // Kalaupun filter yang aktif sudah nggak punya isi (mis. proyek terakhirnya
+  // baru dihapus), halaman balik ke "All" daripada nampil grid kosong.
+  const activeFilterKey =
+    activeFilter === "all" || availableCategories.includes(activeFilter)
+      ? activeFilter
+      : "all";
+
+  const filters = availableCategories.length > 1 ? ["all", ...availableCategories] : [];
+
   // Diturunkan langsung dari props, bukan disimpan di state — biar nggak ada
   // render berantai waktu filter atau daftar item berubah.
   const filteredItems =
-    activeFilter === "all" ? items : items.filter((item) => item.category === activeFilter);
+    activeFilterKey === "all"
+      ? items
+      : items.filter((item) => item.category === activeFilterKey);
 
   return (
     <>
       <section className="mx-auto max-w-[1200px] px-6 pt-12">
         <p ref={ref} className="reveal mt-24 mb-4 font-display text-xs tracking-[0.3em] text-ink/40">SELECTED WORKS</p>
-        <div className="reveal flex flex-wrap gap-2.5" id="filters">
-          {FILTER_KEYS.map((key) => (
-            <button
-              key={key}
-              data-filter={key}
-              onClick={() => setActiveFilter(key)}
-              className={`filter-btn rounded-full px-5 py-2.5 text-[13px] font-medium transition-colors ${
-                activeFilter === key
-                  ? "bg-coral text-white"
-                  : "border border-ink/12 bg-chalk hover:border-coral hover:text-coral"
-              }`}
-            >
-              {CATEGORY_LABELS[key] ?? key}
-            </button>
-          ))}
-        </div>
+        {filters.length > 0 ? (
+          <div className="reveal flex flex-wrap gap-2.5" id="filters">
+            {filters.map((key) => (
+              <button
+                key={key}
+                data-filter={key}
+                aria-pressed={activeFilterKey === key}
+                onClick={() => setActiveFilter(key)}
+                className={`filter-btn rounded-full px-5 py-2.5 text-[13px] font-medium transition-colors ${
+                  activeFilterKey === key
+                    ? "bg-coral text-white"
+                    : "border border-ink/12 bg-chalk hover:border-coral hover:text-coral"
+                }`}
+              >
+                {CATEGORY_LABELS[key] ?? key}
+              </button>
+            ))}
+          </div>
+        ) : null}
       </section>
 
       <section className="mx-auto max-w-[1200px] px-6 py-12">
-        <div id="grid" className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredItems.map((item) => (
-            <PortfolioCard key={item.id} item={item} onQuickView={onQuickView} />
-          ))}
-        </div>
+        {filteredItems.length === 0 ? (
+          <p className="rounded-[1.75rem] border border-dashed border-ink/15 bg-chalk px-6 py-16 text-center text-sm text-ink/50">
+            Belum ada proyek di kategori ini. Tambah lewat panel admin → tab Grid Portofolio.
+          </p>
+        ) : (
+          <div id="grid" className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {filteredItems.map((item) => (
+              <PortfolioCard key={item.id} item={item} onQuickView={onQuickView} />
+            ))}
+          </div>
+        )}
       </section>
     </>
   );
