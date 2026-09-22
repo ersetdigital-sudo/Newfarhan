@@ -169,9 +169,6 @@ export const GRID_SPEC = {
   where: "Homepage · Selected Works + popup quick view",
 };
 
-/** Urutan halaman di panel admin. */
-export const SLOT_PAGES = ["Homepage", "Halaman Project"];
-
 // Kategori portofolio TIDAK lagi tinggal di sini. Sekarang diatur dari panel
 // admin dan disimpan di tabel `categories` — lihat src/lib/categories.ts
 // (tipe + bawaan) dan src/lib/categories.server.ts (baca/tulis database).

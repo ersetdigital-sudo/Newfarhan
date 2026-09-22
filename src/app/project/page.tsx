@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ProjectView } from "@/components/ProjectView";
 import { getSiteImages } from "@/lib/portfolio";
+import { getSiteSettings } from "@/lib/site-settings.server";
 
 export const revalidate = 300;
 
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ProjectPage() {
-  const slots = await getSiteImages();
+  const [slots, settings] = await Promise.all([getSiteImages(), getSiteSettings()]);
 
-  return <ProjectView slots={slots} />;
+  return <ProjectView slots={slots} settings={settings} />;
 }

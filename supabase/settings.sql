@@ -57,5 +57,24 @@ insert into public.site_settings (key, value) values
   ('social_behance',       '#'),
   ('social_whatsapp',      '#'),
   ('footer_left',          '© 2026 Farhan Raka.K. All rights reserved.'),
-  ('footer_right',         'Creative Designer · Visual Design · Branding')
+  ('footer_right',         'Creative Designer · Visual Design · Branding'),
+
+  -- Halaman /project: hero, galeri, dan Case Study (tab "Beranda & Project")
+  ('project_eyebrow',      'Brand Identity System · 2025'),
+  ('project_title',        'ARVA'),
+  ('project_intro',        'Identitas visual menyeluruh: logo suite, sistem warna dan tipografi, stationery, signage toko, sampai template konten sosial media yang bisa dijalankan sendiri oleh tim.'),
+  ('project_meta',         E'Klien|ARVA\nLayanan|Identity & Brand System\nDurasi|6 minggu\nPeran|Designer & Art Direction'),
+  ('gallery_kicker',       'GALLERY'),
+  ('gallery_title',        'Galeri'),
+  ('gallery_hint',         'Klik gambar untuk lihat versi besar'),
+  ('case_kicker',          'CASE STUDY'),
+  ('case_title_1',         'From idea'),
+  ('case_title_2',         'to visual.'),
+  ('case_steps',           E'Discover\nConcept\nDesign & Refine'),
+  ('case_palette',         E'#14131A Ink\n#F26A21 Orange\n#F5B324 Amber\n#F7F1E7 Cream'),
+  ('case_palette_label',   'Palet final brand'),
+  ('case_blocks',          E'Discover\nARVA sudah punya pelanggan tetap, tapi tampilannya belum satu suara: logo dipakai dalam tiga versi berbeda, warna toko dan warna konten tidak sama, dan setiap materi promosi dibuat ulang dari nol. Audit awal memetakan seluruh titik sentuh brand lalu menetapkan satu arah: tenang, hangat, dan terlihat mapan.\n\nConcept\nArah visual dibangun dari kombinasi bentuk geometris sederhana dan palet ink–orange–amber di atas dasar cream. Hasilnya satu sistem yang rapi: primary logo, monogram, versi horizontal, aturan ruang kosong, dan pasangan tipografi untuk judul dan teks panjang.\n\nDesign & Refine\nSistem diturunkan ke materi nyata: stationery suite siap cetak, signage dan facade toko, serta template feed sosial media yang bisa diisi sendiri oleh tim. Semua aturan dirangkum dalam brand guideline 18 halaman beserta file siap produksi.'),
+  ('case_stats',           E'40|%|Engagement naik\n18||Halaman guideline\n24||Titik sentuh brand'),
+  ('case_quote',           'Sekarang brand kami kelihatan rapi di mana pun dipasang, dan timnya gampang ikut aturannya.'),
+  ('case_quote_by',        '— Dimas, owner ARVA')
 on conflict (key) do nothing;

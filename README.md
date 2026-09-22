@@ -43,33 +43,55 @@ Semua foto portofolio bisa diganti lewat **`/admin`** tanpa menyentuh kode.
 
 ### Pembagian tugas
 
-- **Supabase** — data saja: `portfolio_items` (kartu grid), `portfolio_item_images` (foto tambahan per karya), `categories` (kategori/tab filter), `site_images` (9 slot foto tetap), `site_settings` (teks Featured Work, kontak, About & footer).
+- **Supabase** — data saja: `portfolio_items` (kartu grid), `portfolio_item_images` (foto tambahan per karya), `categories` (kategori/tab filter), `site_images` (9 slot foto tetap), `site_settings` (semua teks + palet warna).
 - **Cloudinary** (`omsjoxy8`) — penyimpanan dan pengiriman semua file gambar.
 
 ### Cara pakai
 
 1. Buka `/admin` (login pakai `ADMIN_PASSWORD`).
-2. Tab **Foto Halaman** — ganti 9 foto tetap di homepage, `/project`, dan About.
+2. Tab **Beranda & Project** — semua **foto + teks per bagian halaman** (lihat
+   di bawah). Ini tab utamanya.
 3. Tab **Grid Portofolio** — tambah/edit/hapus/urutkan kartu di "Selected Works",
-   termasuk menambahkan beberapa foto per karya (lihat di bawah).
+   termasuk menambahkan beberapa foto per karya.
 4. Tab **Kategori** — tambah, ganti nama, urutkan, dan hapus tab filter.
-5. Tab **Teks & Kontak** — ganti teks section **Featured Work**, About, Kontak,
-   footer, dan tautan tombol sosial. Field yang dikosongkan otomatis balik ke
-   teks bawaan, jadi situs nggak pernah nampil teks bolong.
+5. Tab **Teks & Kontak** — teks section About, Kontak, footer, dan tautan
+   tombol sosial. Teks Featured Work & Case Study ada di tab **Beranda & Project**
+   karena di sana digabung dengan fotonya.
 
-### Teks Featured Work
+### Tab "Beranda & Project"
 
-Judul section, kalimat pengantar, label + judul kartu besar, dan label + judul
-ketiga kartu kecil semuanya diatur dari tab **Teks & Kontak** (3 grup
-`Featured Work — …`). Fotonya tetap di tab **Foto Halaman** (`featured_main`,
-`featured_stationery`, `featured_environmental`, `featured_digital`), jadi teks
-dan foto diatur dari
-tempat berbeda — sengaja, biar foto nggak ke-reset waktu cuma ganti kata.
+Tiap bagian halaman jadi **satu kartu berisi foto + teksnya**, urut mengikuti
+urutan halaman (14 kartu):
 
-Semua teks kartu diposisikan absolut di dalam kotak yang ukurannya sudah
-dikunci, jadi mengganti teks **nggak bisa** menggeser atau melebarkan kartu.
-Judul dibatasi 3 baris (kartu besar) dan 2 baris (kartu kecil) supaya teks
-panjang nggak meluber keluar kartu; teks utuhnya tetap bisa dibaca lewat
+| Kartu | Isi |
+|---|---|
+| Featured Work — judul section | label, 2 potong judul, kalimat pengantar |
+| Featured Work — kartu besar | foto `featured_main` + label, judul, keterangan |
+| Featured Work — kartu kecil 1–3 | foto `featured_stationery` / `featured_environmental` / `featured_digital` + label & judul |
+| About — foto profil | foto `profile` (teksnya di tab Teks & Kontak) |
+| Project — hero & cover | foto `project_cover` + label, judul, paragraf, 4 baris keterangan |
+| Project — galeri | foto `project_gallery_1..3` + label, judul, keterangan |
+| Case Study — judul / langkah / palet / isi cerita / angka / kutipan | seluruh isi blok Case Study |
+
+Fotonya tersimpan otomatis begitu selesai di-upload; teksnya disimpan lewat
+satu tombol **Simpan perubahan** di bawah. Mengosongkan sebuah field
+mengembalikannya ke teks bawaan, jadi situs nggak pernah nampil teks bolong.
+
+Field yang jumlahnya fleksibel ditulis per baris, dan panel admin nampilin
+"Terbaca N …" biar kelihatan hasilnya:
+
+| Field | Format |
+|---|---|
+| Langkah proses | satu langkah per baris |
+| Palet warna | `#KODE Nama` per baris — baris tanpa kode valid dilewati & dilaporkan |
+| Blok cerita | baris pertama = judul blok, sisanya isi; antar blok dipisah baris kosong |
+| Angka | `angka\|akhiran\|keterangan` per baris |
+| Keterangan hero | `Label\|Isi` per baris |
+
+**Kenapa layout tetap presisi:** semua kotak foto rasionya dikunci di kode, dan
+teks kartu diposisikan absolut di dalam kotak itu — jadi mengganti foto atau
+teks nggak bisa menggeser atau melebarkan kartu. Judul kartu dibatasi 3 baris
+(kartu besar) dan 2 baris (kartu kecil); teks utuhnya tetap bisa dibaca lewat
 `title` (muncul saat kursor diarahkan ke judul).
 
 ### Beberapa foto per karya
@@ -160,7 +182,7 @@ kapan saja lewat SQL Editor Supabase — semuanya idempotent. Urutannya:
    dari `portfolio_items.category` (sekaligus melepas CHECK constraint lama
    yang mengunci kategori ke 5 nilai itu)
 3. `item-images.sql` — tabel `portfolio_item_images` (foto tambahan per karya)
-4. `settings.sql` — teks Featured Work, About, Kontak & footer
+4. `settings.sql` — semua teks (Featured Work, hero project, Case Study, About, Kontak & footer)
 5. `seed.sql` — data portofolio awal (opsional)
 
 Isi tabelnya:
@@ -169,7 +191,7 @@ Isi tabelnya:
 - `portfolio_item_images` — foto tambahan per karya (carousel di kartu)
 - `categories` — kategori/tab filter (key, label, urutan)
 - `site_images` — 9 slot foto tetap, primary key = nama slot
-- `site_settings` — teks Featured Work, About, Kontak & footer (key/value). API-nya cuma mau
+- `site_settings` — semua teks + palet warna (key/value). API-nya cuma mau
   menulis key yang ada di whitelist `SETTING_KEYS` (`src/lib/site-settings.ts`),
   jadi browser nggak bisa nyelipin baris sembarangan.
 

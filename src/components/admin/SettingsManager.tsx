@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { SETTING_GROUPS, settingList, type SettingsMap } from "@/lib/site-settings";
+import { TEXT_GROUPS, type SettingsMap } from "@/lib/site-settings";
+import { SettingInput } from "./SettingInput";
 
 interface SettingsManagerProps {
   settings: SettingsMap;
@@ -15,7 +16,7 @@ export function SettingsManager({ settings }: SettingsManagerProps) {
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const linkFields = SETTING_GROUPS.flatMap((group) => group.fields).filter(
+  const linkFields = TEXT_GROUPS.flatMap((group) => group.fields).filter(
     (field) => field.type === "url"
   );
   const emptyLinks = linkFields.filter((field) => (draft[field.key] ?? "").trim() === "#");
@@ -55,7 +56,9 @@ export function SettingsManager({ settings }: SettingsManagerProps) {
         <p className="text-xs leading-relaxed text-ink/70">
           <strong className="text-ink">Teks ini yang bikin kata-kata di situs bisa diganti.</strong>{" "}
           Mengosongkan sebuah field akan mengembalikannya ke teks bawaan, jadi situs nggak pernah
-          nampil teks bolong.
+          nampil teks bolong. Teks Featured Work, hero project, dan Case Study ada di tab{" "}
+          <strong className="text-ink">Beranda &amp; Project</strong> karena di sana digabung dengan
+          fotonya.
         </p>
         {emptyLinks.length > 0 ? (
           <p className="mt-2 text-xs leading-relaxed text-ink/70">
@@ -66,7 +69,7 @@ export function SettingsManager({ settings }: SettingsManagerProps) {
         ) : null}
       </div>
 
-      {SETTING_GROUPS.map((group) => (
+      {TEXT_GROUPS.map((group) => (
         <section key={group.title} className="rounded-2xl border border-ink/10 bg-chalk p-6">
           <div className="flex flex-wrap items-start justify-between gap-3 border-b border-ink/10 pb-4">
             <div>
@@ -85,41 +88,12 @@ export function SettingsManager({ settings }: SettingsManagerProps) {
 
           <div className="mt-5 grid gap-5 sm:grid-cols-2">
             {group.fields.map((field) => (
-              <label
+              <SettingInput
                 key={field.key}
-                className={field.multiline ? "sm:col-span-2" : undefined}
-              >
-                <span className="block font-display text-[13px] font-semibold">{field.label}</span>
-                {field.hint ? (
-                  <span className="mt-0.5 block text-[11px] leading-snug text-ink/45">
-                    {field.hint}
-                  </span>
-                ) : null}
-
-                {field.multiline ? (
-                  <textarea
-                    rows={field.list ? 6 : 3}
-                    value={draft[field.key] ?? ""}
-                    onChange={(event) => update(field.key, event.target.value)}
-                    className="mt-2 w-full resize-y rounded-xl border border-ink/12 bg-paper px-4 py-3 text-sm leading-relaxed outline-none transition-colors focus:border-coral"
-                  />
-                ) : (
-                  <input
-                    type={
-                      field.type === "email" ? "email" : field.type === "number" ? "number" : "text"
-                    }
-                    value={draft[field.key] ?? ""}
-                    onChange={(event) => update(field.key, event.target.value)}
-                    className="mt-2 w-full rounded-xl border border-ink/12 bg-paper px-4 py-3 text-sm outline-none transition-colors focus:border-coral"
-                  />
-                )}
-
-                {field.list ? (
-                  <span className="mt-1.5 block text-[11px] text-ink/40">
-                    Terbaca {settingList(draft, field.key).length} item
-                  </span>
-                ) : null}
-              </label>
+                field={field}
+                value={draft[field.key] ?? ""}
+                onChange={update}
+              />
             ))}
           </div>
         </section>

@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { cloudinaryImage } from "@/lib/cloudinary";
 import type { SiteImage } from "@/lib/portfolio";
+import { settingValue, type SettingsMap } from "@/lib/site-settings";
 import { slotCanvas, slotSpec } from "@/lib/site-slots";
 
 interface GalleryProps {
   slots: Record<string, SiteImage>;
+  settings?: SettingsMap;
 }
 
 /**
@@ -20,7 +22,7 @@ const GALLERY_LAYOUT = [
   { slot: "project_gallery_3", span: "col-span-full", aspect: "aspect-[13/5]" },
 ];
 
-export function Gallery({ slots }: GalleryProps) {
+export function Gallery({ slots, settings }: GalleryProps) {
   const ref = useScrollReveal();
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxSrc, setLightboxSrc] = useState("");
@@ -56,10 +58,16 @@ export function Gallery({ slots }: GalleryProps) {
   return (
     <>
       <section className="mx-auto max-w-[1200px] px-6 pb-20">
-        <p ref={ref} className="reveal mb-4 font-display text-xs tracking-[0.3em] text-ink/40">GALLERY</p>
+        <p ref={ref} className="reveal mb-4 font-display text-xs tracking-[0.3em] text-ink/40">
+          {settingValue(settings, "gallery_kicker")}
+        </p>
         <div className="reveal mb-10 flex items-end justify-between gap-6">
-          <h2 className="font-display text-3xl font-bold tracking-[-0.03em] md:text-5xl">Galeri</h2>
-          <p className="hidden text-sm text-ink/50 sm:block">Klik gambar untuk lihat versi besar</p>
+          <h2 className="font-display text-3xl font-bold tracking-[-0.03em] md:text-5xl">
+            {settingValue(settings, "gallery_title")}
+          </h2>
+          <p className="hidden text-sm text-ink/50 sm:block">
+            {settingValue(settings, "gallery_hint")}
+          </p>
         </div>
         <div className="grid gap-5 md:grid-cols-6">
           {images.map((img, i) => (

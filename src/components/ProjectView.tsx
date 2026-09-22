@@ -11,13 +11,15 @@ import { Gallery } from "@/components/project/Gallery";
 import { NextProjectCTA } from "@/components/project/NextProjectCTA";
 import { ProjectFooter } from "@/components/project/ProjectFooter";
 import type { SiteImage } from "@/lib/portfolio";
+import type { SettingsMap } from "@/lib/site-settings";
 import { slotSpec } from "@/lib/site-slots";
 
 interface ProjectViewProps {
   slots: Record<string, SiteImage>;
+  settings: SettingsMap;
 }
 
-export function ProjectView({ slots }: ProjectViewProps) {
+export function ProjectView({ slots, settings }: ProjectViewProps) {
   useEffect(() => {
     const init = async () => {
       try {
@@ -115,13 +117,13 @@ export function ProjectView({ slots }: ProjectViewProps) {
       <ProgressBar />
 
       <main>
-        <ProjectHero />
+        <ProjectHero settings={settings} />
         <CoverImage
           src={cover?.image_url || coverSpec?.fallback || ""}
           alt={cover?.alt || coverSpec?.alt}
         />
-        <CaseStudy />
-        <Gallery slots={slots} />
+        <CaseStudy settings={settings} />
+        <Gallery slots={slots} settings={settings} />
         <NextProjectCTA />
       </main>
 
