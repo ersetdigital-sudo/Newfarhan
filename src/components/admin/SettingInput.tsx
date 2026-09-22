@@ -1,6 +1,7 @@
 "use client";
 
 import { settingItemCount, type SettingField } from "@/lib/site-settings";
+import { PaletteEditor } from "./PaletteEditor";
 
 interface SettingInputProps {
   field: SettingField;
@@ -18,13 +19,15 @@ export function SettingInput({ field, value, onChange }: SettingInputProps) {
   const info = settingItemCount({ [field.key]: value }, field);
 
   return (
-    <label className={field.multiline ? "sm:col-span-2" : undefined}>
+    <label className={field.multiline || field.widget ? "sm:col-span-2" : undefined}>
       <span className="block font-display text-[13px] font-semibold">{field.label}</span>
       {field.hint ? (
         <span className="mt-0.5 block text-[11px] leading-snug text-ink/45">{field.hint}</span>
       ) : null}
 
-      {field.multiline ? (
+      {field.widget === "palette" ? (
+        <PaletteEditor value={value} onChange={(next) => onChange(field.key, next)} />
+      ) : field.multiline ? (
         <textarea
           rows={field.list ? 6 : 3}
           value={value}

@@ -74,8 +74,9 @@ urutan halaman (14 kartu):
 | Case Study — judul / langkah / palet / isi cerita / angka / kutipan | seluruh isi blok Case Study |
 
 Fotonya tersimpan otomatis begitu selesai di-upload; teksnya disimpan lewat
-satu tombol **Simpan perubahan** di bawah. Mengosongkan sebuah field
-mengembalikannya ke teks bawaan, jadi situs nggak pernah nampil teks bolong.
+satu tombol **Simpan perubahan** di bawah (jadi salah ketik masih bisa
+dibatalkan). Mengosongkan sebuah field mengembalikannya ke teks bawaan, jadi
+situs nggak pernah nampil teks bolong.
 
 Field yang jumlahnya fleksibel ditulis per baris, dan panel admin nampilin
 "Terbaca N …" biar kelihatan hasilnya:
@@ -83,7 +84,7 @@ Field yang jumlahnya fleksibel ditulis per baris, dan panel admin nampilin
 | Field | Format |
 |---|---|
 | Langkah proses | satu langkah per baris |
-| Palet warna | `#KODE Nama` per baris — baris tanpa kode valid dilewati & dilaporkan |
+| Palet warna | **color picker** — pilih warnanya langsung, nama opsional, jumlah bebas. Datanya tetap disimpan sebagai `#KODE Nama` per baris. Ada tombol *ambil cepat* dari warna yang sudah dipakai situs. |
 | Blok cerita | baris pertama = judul blok, sisanya isi; antar blok dipisah baris kosong |
 | Angka | `angka\|akhiran\|keterangan` per baris |
 | Keterangan hero | `Label\|Isi` per baris |

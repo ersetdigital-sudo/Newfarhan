@@ -101,7 +101,27 @@ export interface SettingField {
   type?: "text" | "email" | "url" | "number";
   /** Field ini isinya daftar (satu item per baris / dipisah koma). */
   list?: boolean;
+  /**
+   * Widget khusus buat field ini. "palette" = color picker (lihat
+   * PaletteEditor), bukan textarea. Datanya tetap disimpan sebagai teks
+   * baris-per-baris, jadi bentuk di database nggak berubah.
+   */
+  widget?: "palette";
 }
+
+/** Warna yang sudah dipakai di situs — buat tombol "ambil cepat" di editor palet. */
+export const BRAND_SWATCHES: { hex: string; name: string }[] = [
+  { hex: "#14131A", name: "Ink" },
+  { hex: "#FF5A45", name: "Coral" },
+  { hex: "#E8A33D", name: "Mustard" },
+  { hex: "#C96A4B", name: "Clay" },
+  { hex: "#3F3D9E", name: "Indigo" },
+  { hex: "#F26A21", name: "Orange" },
+  { hex: "#F5B324", name: "Amber" },
+  { hex: "#F7F1E7", name: "Cream" },
+  { hex: "#FBF9F5", name: "Paper" },
+  { hex: "#FFFFFF", name: "Putih" },
+];
 
 export interface SettingGroup {
   title: string;
@@ -273,10 +293,9 @@ export const SETTING_GROUPS: SettingGroup[] = [
     fields: [
       {
         key: "case_palette",
-        label: "Warna",
-        multiline: true,
-        list: true,
-        hint: 'Satu warna per baris, format "#KODE Nama" — contoh: #FF5A45 Coral. Namanya opsional (muncul saat kursor diarahkan ke kotak warnanya).',
+        label: "Warna palet",
+        widget: "palette",
+        hint: "Pilih warnanya langsung dari color picker. Jumlah warnanya bebas.",
       },
       { key: "case_palette_label", label: "Keterangan di bawah kotak warna" },
     ],
