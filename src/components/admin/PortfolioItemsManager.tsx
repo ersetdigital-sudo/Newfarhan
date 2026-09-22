@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { AdminPortfolioItem } from "@/lib/portfolio";
 import type { Category } from "@/lib/categories";
 import { GRID_SPEC } from "@/lib/site-slots";
+import { ExtraPhotosEditor } from "./ExtraPhotosEditor";
 import { ImageUploader } from "./ImageUploader";
 
 interface ManagerProps {
@@ -261,6 +262,27 @@ function ItemCard({
   });
   const [busy, setBusy] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [extras, setExtras] = useState<string[]>(item.images);
+
+  /**
+   * Foto tambahan disimpan langsung (nggak nunggu tombol simpan), sama seperti
+   * foto utama — biar nggak ada foto yang hilang gara-gara lupa klik simpan.
+   */
+  async function saveExtras(next: string[]) {
+    const response = await fetch(`/api/admin/items/${encodeURIComponent(item.slug)}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ images: next }),
+    });
+
+    if (!response.ok) {
+      const payload = await response.json().catch(() => null);
+      throw new Error(payload?.error || "Gagal menyimpan foto lain.");
+    }
+
+    setExtras(next);
+    onSaved();
+  }
 
   async function save() {
     setBusy(true);
@@ -422,6 +444,13 @@ function ItemCard({
           </div>
         </div>
       </div>
+
+      <ExtraPhotosEditor
+        photos={extras}
+        onChange={saveExtras}
+        aspect={GRID_SPEC.aspect}
+        folder="grid"
+      />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { guardAdminApi } from "@/lib/admin-auth";
 import { validCategoryKeys } from "@/lib/categories.server";
+import { saveExtraImages } from "@/lib/portfolio";
 import { supabaseAdmin } from "@/lib/supabase";
 
 export const runtime = "nodejs";
@@ -46,6 +47,23 @@ export async function PATCH(request: Request, { params }: Params) {
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  // Foto tambahan dikirim sebagai daftar utuh, jadi urutannya persis seperti
+  // yang tampil di admin. Daftar kosong = hapus semua foto tambahannya.
+  if (Array.isArray(body.images)) {
+    const urls = body.images
+      .map((value) => (typeof value === "string" ? value.trim() : ""))
+      .filter(Boolean);
+
+    try {
+      await saveExtraImages(id, urls);
+    } catch (caught) {
+      return NextResponse.json(
+        { error: caught instanceof Error ? caught.message : "Gagal menyimpan foto tambahan." },
+        { status: 500 }
+      );
+    }
+  }
 
   revalidatePath("/");
   revalidatePath("/project");

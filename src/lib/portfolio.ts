@@ -1,3 +1,4 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { portfolioItems as fallbackItems } from "@/data/portfolio";
 import { SITE_SLOTS } from "@/lib/site-slots";
 import { isSupabaseConfigured, supabaseRead, supabaseAdmin } from "@/lib/supabase";
@@ -12,7 +13,13 @@ export interface PortfolioItem {
   title: string;
   description: string;
   category: string;
+  /** Foto utama — ini yang jadi thumbnail kartu. */
   image: string;
+  /**
+   * Foto tambahan dari karya yang sama (tanpa foto utama). Kalau ada isinya,
+   * kartu di grid menampilkannya sebagai carousel yang bisa digeser.
+   */
+  images: string[];
   quickView: { description: string };
 }
 
@@ -47,20 +54,58 @@ interface PortfolioRow {
   published: boolean | null;
 }
 
-function toPublicItem(row: PortfolioRow): PortfolioItem {
+interface ExtraImageRow {
+  item_slug: string;
+  image_url: string;
+  sort_order: number | null;
+}
+
+/**
+ * Kelompokkan foto tambahan per karya: { slug: [url, url, …] } sesuai urutan.
+ * Kalau tabelnya belum ada / query gagal, balikin objek kosong — foto utama
+ * tetap tampil, jadi situs nggak ikut rusak.
+ */
+async function extrasBySlug(
+  client: SupabaseClient,
+  slugs: string[]
+): Promise<Record<string, string[]>> {
+  if (slugs.length === 0) return {};
+
+  try {
+    const { data, error } = await client
+      .from("portfolio_item_images")
+      .select("item_slug, image_url, sort_order")
+      .in("item_slug", slugs)
+      .order("sort_order", { ascending: true });
+
+    if (error || !data) return {};
+
+    const out: Record<string, string[]> = {};
+    for (const row of data as ExtraImageRow[]) {
+      if (!row.image_url) continue;
+      (out[row.item_slug] ??= []).push(row.image_url);
+    }
+    return out;
+  } catch {
+    return {};
+  }
+}
+
+function toPublicItem(row: PortfolioRow, extras: string[]): PortfolioItem {
   return {
     id: row.slug,
     title: row.title,
     description: row.subtitle ?? "",
     category: row.category,
     image: row.image_url,
+    images: extras,
     quickView: { description: row.description ?? "" },
   };
 }
 
-function toAdminItem(row: PortfolioRow): AdminPortfolioItem {
+function toAdminItem(row: PortfolioRow, extras: string[]): AdminPortfolioItem {
   return {
-    ...toPublicItem(row),
+    ...toPublicItem(row, extras),
     slug: row.slug,
     subtitle: row.subtitle ?? "",
     popupDescription: row.description ?? "",
@@ -91,7 +136,7 @@ export function fallbackSiteImages(): Record<string, SiteImage> {
  * supaya situs nggak pernah kosong.
  */
 export async function getPortfolioItems(): Promise<PortfolioItem[]> {
-  if (!isSupabaseConfigured) return fallbackItems;
+  if (!isSupabaseConfigured) return fallbackItems.map((item) => ({ ...item, images: [] }));
 
   try {
     const { data, error } = await supabaseRead()
@@ -100,10 +145,15 @@ export async function getPortfolioItems(): Promise<PortfolioItem[]> {
       .eq("published", true)
       .order("sort_order", { ascending: true });
 
-    if (error || !data || data.length === 0) return fallbackItems;
-    return (data as PortfolioRow[]).map(toPublicItem);
+    if (error || !data || data.length === 0) {
+      return fallbackItems.map((item) => ({ ...item, images: [] }));
+    }
+
+    const rows = data as PortfolioRow[];
+    const extras = await extrasBySlug(supabaseRead(), rows.map((row) => row.slug));
+    return rows.map((row) => toPublicItem(row, extras[row.slug] ?? []));
   } catch {
-    return fallbackItems;
+    return fallbackItems.map((item) => ({ ...item, images: [] }));
   }
 }
 
@@ -138,5 +188,26 @@ export async function getAdminItems(): Promise<AdminPortfolioItem[]> {
     .order("sort_order", { ascending: true });
 
   if (error) throw new Error(error.message);
-  return ((data ?? []) as PortfolioRow[]).map(toAdminItem);
+
+  const rows = (data ?? []) as PortfolioRow[];
+  const extras = await extrasBySlug(supabaseAdmin(), rows.map((row) => row.slug));
+  return rows.map((row) => toAdminItem(row, extras[row.slug] ?? []));
+}
+
+/** Ganti seluruh daftar foto tambahan sebuah karya (urutannya ikut disimpan). */
+export async function saveExtraImages(slug: string, urls: string[]): Promise<void> {
+  const admin = supabaseAdmin();
+
+  const { error: deleteError } = await admin
+    .from("portfolio_item_images")
+    .delete()
+    .eq("item_slug", slug);
+
+  if (deleteError) throw new Error(deleteError.message);
+  if (urls.length === 0) return;
+
+  const { error } = await admin.from("portfolio_item_images").insert(
+    urls.map((image_url, index) => ({ item_slug: slug, image_url, sort_order: index + 1 }))
+  );
+  if (error) throw new Error(error.message);
 }

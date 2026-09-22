@@ -43,18 +43,39 @@ Semua foto portofolio bisa diganti lewat **`/admin`** tanpa menyentuh kode.
 
 ### Pembagian tugas
 
-- **Supabase** — data saja: `portfolio_items` (kartu grid), `categories` (kategori/tab filter), `site_images` (9 slot foto tetap), `site_settings` (teks kontak, About & footer).
+- **Supabase** — data saja: `portfolio_items` (kartu grid), `portfolio_item_images` (foto tambahan per karya), `categories` (kategori/tab filter), `site_images` (9 slot foto tetap), `site_settings` (teks kontak, About & footer).
 - **Cloudinary** (`omsjoxy8`) — penyimpanan dan pengiriman semua file gambar.
 
 ### Cara pakai
 
 1. Buka `/admin` (login pakai `ADMIN_PASSWORD`).
 2. Tab **Foto Halaman** — ganti 9 foto tetap di homepage, `/project`, dan About.
-3. Tab **Grid Portofolio** — tambah/edit/hapus/urutkan kartu di "Selected Works".
+3. Tab **Grid Portofolio** — tambah/edit/hapus/urutkan kartu di "Selected Works",
+   termasuk menambahkan beberapa foto per karya (lihat di bawah).
 4. Tab **Kategori** — tambah, ganti nama, urutkan, dan hapus tab filter.
 5. Tab **Teks & Kontak** — ganti teks section About, Kontak, footer, dan tautan
    tombol sosial. Field yang dikosongkan otomatis balik ke teks bawaan, jadi
    situs nggak pernah nampil teks bolong.
+
+### Beberapa foto per karya
+
+Satu kartu bisa punya lebih dari satu foto. Foto **utama** (uploader besar) jadi
+thumbnail kartu; foto lainnya diatur di bagian **"Foto lain"** di bawahnya, dan
+semuanya tampil di kartu grid sebagai **carousel** yang bisa digeser:
+
+- Desktop — tombol ‹ › muncul waktu kartunya di-hover, plus titik indikator.
+- HP — geser pakai jari, atau ketuk titik indikatornya.
+
+Urutan di panel admin = urutan geser di situs. Foto tambahan **langsung
+tersimpan** setiap kali ditambah/diurutkan/dihapus (nggak nunggu tombol
+"Simpan perubahan"), sama seperti foto utama.
+
+Semua foto tetap dipadu Cloudinary ke kanvas 4:5 saat dikirim, jadi menambah
+foto sebanyak apa pun nggak akan mengubah bentuk kartunya. Menghapus karya
+otomatis menghapus baris foto tambahannya (`on delete cascade`).
+
+Foto tambahan cuma dikirim ke pengunjung kalau karya induknya ikut tayang —
+policy RLS-nya memeriksa `published` di `portfolio_items`.
 
 ### Kategori
 
@@ -123,12 +144,14 @@ kapan saja lewat SQL Editor Supabase — semuanya idempotent. Urutannya:
 2. `categories.sql` — tabel `categories`, isi 5 kategori awal, dan FOREIGN KEY
    dari `portfolio_items.category` (sekaligus melepas CHECK constraint lama
    yang mengunci kategori ke 5 nilai itu)
-3. `settings.sql` — teks About, Kontak & footer
-4. `seed.sql` — data portofolio awal (opsional)
+3. `item-images.sql` — tabel `portfolio_item_images` (foto tambahan per karya)
+4. `settings.sql` — teks About, Kontak & footer
+5. `seed.sql` — data portofolio awal (opsional)
 
 Isi tabelnya:
 
 - `portfolio_items` — kartu grid (judul, kategori, deskripsi, urutan, published)
+- `portfolio_item_images` — foto tambahan per karya (carousel di kartu)
 - `categories` — kategori/tab filter (key, label, urutan)
 - `site_images` — 9 slot foto tetap, primary key = nama slot
 - `site_settings` — teks section About, Kontak & footer (key/value)
