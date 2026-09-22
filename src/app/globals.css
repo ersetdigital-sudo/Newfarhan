@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+/* Sumber yang sengaja nggak ikut di-scan Tailwind.
+   `_legacy-pages/` = snapshot HTML lama (disimpan sebagai referensi, nggak pernah
+   disajikan) dan `README.md` = dokumentasi. Keduanya masih memuat contoh kelas
+   ber-koma seperti `grid-cols-[160px,1fr]` — kalau ikut di-scan, Tailwind
+   meng-emit aturan `grid-template-columns:160px,1fr` yang invalid ke CSS produksi.
+   Path-nya relatif ke file ini. */
+@source not "../../_legacy-pages";
+@source not "../../README.md";
+
 /* ─── Tailwind v4 Theme Tokens ─── */
 @theme inline {
   /* Colors */
